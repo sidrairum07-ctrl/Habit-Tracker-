@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aesthetic Habit Tracker & Bullet Journal</title>
+  
+  <!-- Google Fonts: Montserrat (wide display), Playfair Display (aesthetic headers), Plus Jakarta Sans (clean UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Top Aesthetic Navigation & Controls -->
+    <header class="aesthetic-header">
+      <div class="header-top">
+        <div class="brand-sparkle">✦ ✧ ✦</div>
+        <h1 class="brand-title">HABIT TRACKER</h1>
+        <p class="brand-subtitle">DAILY DISCIPLINE & MINDFUL LIVING</p>
+      </div>
+
+      <div class="controls-bar">
+        <!-- View Switcher -->
+        <div class="nav-tabs" role="tablist">
+          <button class="tab-btn active" id="tabGrid" data-view="grid">
+            <span class="tab-icon">▦</span>
+            <span>MONTHLY GRID</span>
+          </button>
+          <button class="tab-btn" id="tabDaily" data-view="daily">
+            <span class="tab-icon">✓</span>
+            <span>TODAY'S TO-DO</span>
+            <span class="badge-count" id="todayDoneBadge">0/20</span>
+          </button>
+          <button class="tab-btn" id="tabStats" data-view="stats">
+            <span class="tab-icon">✦</span>
+            <span>INSIGHTS</span>
+          </button>
+        </div>
+
+        <!-- Month Navigation -->
+        <div class="month-nav">
+          <button class="nav-arrow-btn" id="prevMonthBtn" title="Previous Month" aria-label="Previous Month">❮</button>
+          <div class="current-month-display" id="currentMonthYear">SEPTEMBER 2026</div>
+          <button class="nav-arrow-btn" id="nextMonthBtn" title="Next Month" aria-label="Next Month">❯</button>
+          <button class="today-shortcut-btn" id="jumpTodayBtn" title="Go to Current Day">Today</button>
+        </div>
+
+        <!-- Actions & Tools -->
+        <div class="header-actions">
+          <button class="action-btn" id="soundToggleBtn" title="Toggle Sound Feedback">
+            <span id="soundIcon">🔔</span>
+          </button>
+          <button class="action-btn" id="exportBtn" title="Export / Backup Data">
+            <span>💾 Backup</span>
+          </button>
+          <button class="action-btn" id="importBtn" title="Restore Data">
+            <span>📥 Restore</span>
+          </button>
+          <input type="file" id="importFileInput" accept=".json" style="display: none;">
+          <button class="action-btn print-btn" id="printBtn" title="Print Tracker Sheet">
+            <span>🖨️ Print</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="main-content">
+      
+      <!-- ==================== VIEW 1: MONTHLY GRID (Image 2 style) ==================== -->
+      <section id="viewGrid" class="view-panel active">
+        <div class="tracker-sheet-frame">
+          <div class="sheet-paper">
+            
+            <!-- Sheet Header / Rotated Sidebar -->
+            <div class="sheet-top-header">
+              <div class="sheet-title-group">
+                <span class="sparkle-deco">✦</span>
+                <span class="sheet-main-title" id="sheetMonthLabel">MONTHLY HABIT TRACKER</span>
+                <span class="sparkle-deco">✦</span>
+                <span class="sheet-sub-date" id="sheetDateSubtitle">SEPTEMBER 2026</span>
+              </div>
+              
+              <!-- Category Filter & Legend -->
+              <div class="sheet-legend-bar">
+                <div class="legend-item"><span class="legend-box tick">✓</span> Completed</div>
+                <div class="legend-item"><span class="legend-box cross">✕</span> Missed</div>
+                <div class="legend-item"><span class="legend-box empty"></span> Unchecked</div>
+                <div class="legend-separator">|</div>
+                <div class="filter-pills">
+                  <button class="filter-pill active" data-category="all">All (20)</button>
+                  <button class="filter-pill" data-category="spiritual">Spiritual (9)</button>
+                  <button class="filter-pill" data-category="career">DSA & Study (4)</button>
+                  <button class="filter-pill" data-category="lifestyle">Health & Habit (7)</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- The Grid Table (Sticky Header + Sticky First Column) -->
+            <div class="grid-table-container" id="gridTableContainer">
+              <table class="habit-grid-table" id="habitGridTable">
+                <thead id="gridThead">
+                  <!-- Generated via JS: Days 1 to 31 with Day of Week initials -->
+                </thead>
+                <tbody id="gridTbody">
+                  <!-- Generated via JS: 20 Habit Rows with Interactive Cells -->
+                </tbody>
+                <tfoot id="gridTfoot">
+                  <!-- Generated via JS: Daily Completion Count & Percentage Row -->
+                </tfoot>
+              </table>
+            </div>
+
+            <!-- Sheet Footer Notes -->
+            <div class="sheet-bottom-bar">
+              <div class="guide-tip">
+                <span class="tip-star">✧</span> Click any box to toggle: <strong>Empty → ✓ Tick → ✕ Cross → Empty</strong>
+              </div>
+              <div class="month-overall-stat" id="monthOverallStat">
+                Monthly Consistency: <strong>0%</strong> (0/0 checks)
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 2: TODAY'S TO-DO CHECKLIST ==================== -->
+      <section id="viewDaily" class="view-panel">
+        <div class="daily-checklist-container">
+          
+          <!-- Daily Header Banner -->
+          <div class="daily-card-header">
+            <div class="daily-date-picker-group">
+              <span class="sparkle-deco">✧</span>
+              <div class="daily-heading-texts">
+                <h2 class="daily-heading" id="dailyViewDateTitle">TODAY'S CHECKLIST</h2>
+                <p class="daily-subtext" id="dailyViewDateSub">Monday, September 28, 2026</p>
+              </div>
+            </div>
+            
+            <div class="daily-date-stepper">
+              <button class="stepper-btn" id="dailyPrevDay">❮ Yesterday</button>
+              <input type="date" id="dailyDatePicker" class="aesthetic-date-input">
+              <button class="stepper-btn" id="dailyNextDay">Tomorrow ❯</button>
+            </div>
+          </div>
+
+          <!-- Daily Overview & Progress Bar -->
+          <div class="daily-progress-card">
+            <div class="progress-details">
+              <div class="progress-text-block">
+                <span class="progress-label">Today's Progress</span>
+                <span class="progress-score" id="dailyScoreDisplay">0 of 20 Completed</span>
+              </div>
+              <div class="progress-percentage-pill" id="dailyPercentPill">0%</div>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="dailyProgressBar" style="width: 0%;"></div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-batch-actions">
+              <button class="batch-btn" id="markAllDoneBtn">✓ Mark All Remaining Done</button>
+              <button class="batch-btn secondary" id="resetTodayBtn">↺ Reset Today</button>
+            </div>
+          </div>
+
+          <!-- Categorized Checklist Columns -->
+          <div class="daily-categories-grid">
+            
+            <!-- Column 1: Spiritual & Duas -->
+            <div class="checklist-column spiritual-card">
+              <div class="col-header">
+                <div class="col-title-group">
+                  <span class="category-icon">🕌</span>
+                  <h3 class="col-title">SPIRITUAL & PRAYERS</h3>
+                </div>
+                <span class="col-count" id="countSpiritual">0/9</span>
+              </div>
+              <div class="checklist-items" id="listSpiritual">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Column 2: DSA & Study -->
+            <div class="checklist-column career-card">
+              <div class="col-header">
+                <div class="col-title-group">
+                  <span class="category-icon">💻</span>
+                  <h3 class="col-title">DSA & LEARNING</h3>
+                </div>
+                <span class="col-count" id="countCareer">0/4</span>
+              </div>
+              <div class="checklist-items" id="listCareer">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Column 3: Health & Routine -->
+            <div class="checklist-column lifestyle-card">
+              <div class="col-header">
+                <div class="col-title-group">
+                  <span class="category-icon">🌿</span>
+                  <h3 class="col-title">HEALTH & WELLNESS</h3>
+                </div>
+                <span class="col-count" id="countLifestyle">0/7</span>
+              </div>
+              <div class="checklist-items" id="listLifestyle">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Daily Reflection / Basic Journal Prompt (from Habit list: write journal basic) -->
+          <div class="daily-journal-card">
+            <div class="journal-card-header">
+              <span class="journal-title">✦ DAILY BASIC JOURNAL & INTENTION</span>
+              <span class="journal-status" id="journalSavedNotice">Auto-saved</span>
+            </div>
+            <textarea id="dailyJournalInput" class="journal-textarea" rows="3" placeholder="Write your thoughts, gratitude, or quick reflection for the day..."></textarea>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 3: INSIGHTS & HABIT STREAKS ==================== -->
+      <section id="viewStats" class="view-panel">
+        <div class="stats-container">
+          <div class="stats-overview-cards">
+            <div class="stat-card">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-meta">
+                <span class="stat-value" id="statLongestStreak">0 Days</span>
+                <span class="stat-label">Best Active Streak</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">✓</div>
+              <div class="stat-meta">
+                <span class="stat-value" id="statTotalChecks">0</span>
+                <span class="stat-label">Total Checks this Month</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📈</div>
+              <div class="stat-meta">
+                <span class="stat-value" id="statAvgCompletion">0%</span>
+                <span class="stat-label">Daily Average Completion</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-meta">
+                <span class="stat-value" id="statTopHabit">None yet</span>
+                <span class="stat-label">Most Consistent Habit</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Habit Streaks & Success Breakdown Table -->
+          <div class="habits-breakdown-card">
+            <h3 class="breakdown-title">✦ ALL 20 HABITS PERFORMANCE BREAKDOWN</h3>
+            <div class="table-responsive">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th>Habit</th>
+                    <th>Category</th>
+                    <th>Completed</th>
+                    <th>Missed</th>
+                    <th>Rate</th>
+                    <th>Streak</th>
+                    <th>Visual Progress</th>
+                  </tr>
+                </thead>
+                <tbody id="statsTableBody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Aesthetic Floating Footer -->
+    <footer class="app-footer">
+      <div class="footer-sparkle">✦ ✦ ✦</div>
+      <p>Aesthetic Bullet Journal Habit Tracker • Designed with discipline & care</p>
+    </footer>
+
+  </div>
+
+  <!-- Audio element for soft aesthetic click (Web Audio API synthetic fallback) -->
+  <script src="app.js"></script>
+</body>
+</html>
