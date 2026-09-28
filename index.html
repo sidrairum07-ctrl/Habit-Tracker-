@@ -47,21 +47,27 @@
           </button>
         </div>
 
-        <!-- Month Navigation -->
-        <div class="month-nav">
-          <button class="nav-arrow-btn" id="prevMonthBtn" title="Previous Month" aria-label="Previous Month">❮</button>
-          <div class="current-month-display" id="currentMonthYear">SEPTEMBER 2026</div>
-          <button class="nav-arrow-btn" id="nextMonthBtn" title="Next Month" aria-label="Next Month">❯</button>
-          <button class="today-shortcut-btn" id="jumpTodayBtn" title="Go to Current Day">Today</button>
+        <!-- Month Navigation + Twilight Switch Directly Below It -->
+        <div class="month-center-group">
+          <div class="month-nav">
+            <button class="nav-arrow-btn" id="prevMonthBtn" title="Previous Month" aria-label="Previous Month">❮</button>
+            <div class="current-month-display" id="currentMonthYear">SEPTEMBER 2026</div>
+            <button class="nav-arrow-btn" id="nextMonthBtn" title="Next Month" aria-label="Next Month">❯</button>
+            <button class="today-shortcut-btn" id="jumpTodayBtn" title="Go to Current Day">Today</button>
+          </div>
+
+          <!-- Twilight Mode Toggle Switch Below Month (Image 4 style) -->
+          <div class="theme-switch-wrap">
+            <span class="theme-switch-label">Twilight</span>
+            <label class="switch-toggle" for="themeSwitch">
+              <input type="checkbox" id="themeSwitch" aria-label="Toggle Twilight Mode">
+              <span class="switch-track"></span>
+            </label>
+          </div>
         </div>
 
-        <!-- Actions & Tools -->
+        <!-- Actions & Tools (Twilight button removed from here) -->
         <div class="header-actions">
-          <!-- Feature 3: Twilight Theme Toggle -->
-          <button class="action-btn theme-btn" id="themeToggleBtn" title="Toggle Twilight Night Mode">
-            <span id="themeIcon">🌙</span>
-            <span id="themeLabel">Twilight</span>
-          </button>
           <button class="action-btn" id="soundToggleBtn" title="Toggle Sound Feedback">
             <span id="soundIcon">🔔</span>
           </button>
@@ -83,47 +89,40 @@
     <main class="main-content">
       
       <!-- ==================== VIEW 1: MONTHLY GRID ==================== -->
+      <!-- Removed outer extra frame layer to eliminate double backgrounds and save space -->
       <section id="viewGrid" class="view-panel active">
-        <div class="tracker-sheet-frame">
-          <div class="sheet-paper">
-            
-            <!-- Clean Sheet Header with Feature 5: Month vs Week Toggle -->
-            <div class="sheet-top-header">
-              <div class="sheet-title-group">
-                <span class="sheet-main-title" id="sheetMonthLabel">MONTHLY HABIT TRACKER</span>
-                <span class="sheet-sub-date" id="sheetDateSubtitle">SEPTEMBER 2026</span>
-              </div>
-
-              <!-- Feature 5: Scope Selector (Full Month vs This Week) -->
-              <div class="grid-scope-controls">
-                <button class="scope-toggle-btn active" id="btnScopeMonth" data-scope="month">Full Month</button>
-                <button class="scope-toggle-btn" id="btnScopeWeek" data-scope="week">This Week</button>
-              </div>
+        <div class="sheet-paper">
+          
+          <!-- Clean Sheet Header (This Week toggle removed) -->
+          <div class="sheet-top-header">
+            <div class="sheet-title-group">
+              <span class="sheet-main-title" id="sheetMonthLabel">MONTHLY HABIT TRACKER</span>
+              <span class="sheet-sub-date" id="sheetDateSubtitle">SEPTEMBER 2026</span>
             </div>
-
-            <!-- The Grid Table (Sticky Header + Sticky First Column) -->
-            <div class="grid-table-container" id="gridTableContainer">
-              <table class="habit-grid-table" id="habitGridTable">
-                <thead id="gridThead">
-                  <!-- Generated via JS -->
-                </thead>
-                <tbody id="gridTbody">
-                  <!-- Generated via JS -->
-                </tbody>
-                <tfoot id="gridTfoot">
-                  <!-- Generated via JS -->
-                </tfoot>
-              </table>
-            </div>
-
-            <!-- Sheet Footer Guide with Feature 2 hint -->
-            <div class="sheet-bottom-bar">
-              <div class="guide-tip">
-                Click box: <strong>Empty → ✓ Tick → ✕ Cross</strong> &bull; Right-click or hold box to add a <strong>Mini-Note 📝</strong>
-              </div>
-            </div>
-
           </div>
+
+          <!-- The Grid Table (Single header row for laser-straight line alignment) -->
+          <div class="grid-table-container" id="gridTableContainer">
+            <table class="habit-grid-table" id="habitGridTable">
+              <thead id="gridThead">
+                <!-- Injected via JS: 1 Single unified header row -->
+              </thead>
+              <tbody id="gridTbody">
+                <!-- Injected via JS: 21 Habit Rows -->
+              </tbody>
+              <tfoot id="gridTfoot">
+                <!-- Injected via JS: Daily Completion Count & Percentage Row -->
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Sheet Footer Guide -->
+          <div class="sheet-bottom-bar">
+            <div class="guide-tip">
+              Click box: <strong>Empty → ✓ Tick → ✕ Cross</strong> &bull; Right-click or hold box to add a <strong>Mini-Note 📝</strong>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -252,7 +251,7 @@
 
   </div>
 
-  <!-- Feature 2: Minimalist Note Popover / Dialog -->
+  <!-- Note Popover / Dialog -->
   <dialog id="noteDialog" class="aesthetic-dialog">
     <div class="dialog-box">
       <div class="dialog-header">

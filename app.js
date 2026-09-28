@@ -1,10 +1,6 @@
 /**
  * Aesthetic Habit Tracker & Daily To-Do Planner
- * Includes Features:
- *  1. PWA Service Worker
- *  2. Mini-Notes (Right-click cell or tap ✎)
- *  3. Twilight Night Mode Theme
- *  5. This Week vs Full Month Scope
+ * Clean, perfectly aligned, single-row table header, iOS-style toggle switch below month
  */
 
 (function () {
@@ -47,7 +43,6 @@
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth(); // 0-indexed
   let selectedDailyDate = formatDateKey(today); // 'YYYY-MM-DD'
-  let gridScope = 'month'; // 'month' or 'week'
   let currentTheme = 'linen'; // 'linen' or 'twilight'
   let soundEnabled = true;
 
@@ -79,7 +74,6 @@
     registerServiceWorker();
   }
 
-  // Feature 1: PWA Service Worker
   function registerServiceWorker() {
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       navigator.serviceWorker.register('./service-worker.js').catch(() => {});
@@ -137,27 +131,22 @@
     } catch (e) {}
   }
 
-  // Feature 3: Theme Management
+  // --- 4. THEME TOGGLE (iOS Slider Switch) ---
   function initTheme() {
     applyTheme(currentTheme);
   }
 
   function applyTheme(theme) {
     currentTheme = theme;
+    const switchEl = document.getElementById('themeSwitch');
     if (theme === 'twilight') {
       document.documentElement.setAttribute('data-theme', 'twilight');
-      document.getElementById('themeIcon').textContent = '☀️';
-      document.getElementById('themeLabel').textContent = 'Linen';
+      if (switchEl) switchEl.checked = true;
     } else {
       document.documentElement.removeAttribute('data-theme');
-      document.getElementById('themeIcon').textContent = '🌙';
-      document.getElementById('themeLabel').textContent = 'Twilight';
+      if (switchEl) switchEl.checked = false;
     }
     localStorage.setItem(THEME_KEY, currentTheme);
-  }
-
-  function toggleTheme() {
-    applyTheme(currentTheme === 'twilight' ? 'linen' : 'twilight');
   }
 
   // Audio synthesizer
@@ -249,87 +238,48 @@
     return new Date(year, month + 1, 0).getDate();
   }
 
-  // Feature 5: Get 7 days for "This Week" mode
-  function getDaysForCurrentScope() {
-    if (gridScope === 'month') {
-      const daysCount = getDaysInMonth(currentYear, currentMonth);
-      const days = [];
-      for (let d = 1; d <= daysCount; d++) {
-        days.push(new Date(currentYear, currentMonth, d));
-      }
-      return days;
-    } else {
-      // Week mode: Find Monday of selected date's week
-      const target = parseDateKey(selectedDailyDate);
-      const dayOfWeek = target.getDay(); // 0 is Sun, 1 is Mon
-      const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      const monday = new Date(target);
-      monday.setDate(target.getDate() + diffToMon);
-
-      const days = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
-        days.push(d);
-      }
-      return days;
-    }
-  }
-
-  // --- 4. MONTHLY / WEEKLY GRID VIEW ---
+  // --- 5. MONTHLY GRID VIEW (Seamless 1-Row Table Header) ---
   function updateMonthDisplay() {
-    if (gridScope === 'month') {
-      const label = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
-      document.getElementById('currentMonthYear').textContent = label;
-      document.getElementById('sheetDateSubtitle').textContent = label;
-    } else {
-      const days = getDaysForCurrentScope();
-      const first = days[0];
-      const last = days[6];
-      const firstStr = `${first.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-      const lastStr = `${last.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-      const label = `${firstStr} – ${lastStr}`;
-      document.getElementById('currentMonthYear').textContent = label.toUpperCase();
-      document.getElementById('sheetDateSubtitle').textContent = label.toUpperCase();
-    }
+    const label = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+    document.getElementById('currentMonthYear').textContent = label;
+    document.getElementById('sheetDateSubtitle').textContent = label;
   }
 
   function renderMonthlyGrid() {
-    const table = document.getElementById('habitGridTable');
-    if (gridScope === 'week') table.classList.add('mode-week');
-    else table.classList.remove('mode-week');
-
-    const displayedDays = getDaysForCurrentScope();
+    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
     const gridThead = document.getElementById('gridThead');
     const gridTbody = document.getElementById('gridTbody');
     const gridTfoot = document.getElementById('gridTfoot');
 
     const todayKey = formatDateKey(new Date());
 
-    // 1. THEAD
-    let dayNamesHtml = `<th class="habit-col-name" rowspan="2">HABIT (${HABITS.length})</th>`;
-    let dayNumsHtml = '';
+    // 1. THEAD: Exactly 1 single header row so borders are 100% laser-straight with zero misalignment!
+    let theadRowHtml = `<th class="habit-col-name"><div class="habit-col-head-text">HABIT (${HABITS.length})</div></th>`;
 
-    displayedDays.forEach(dayDate => {
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayDate = new Date(currentYear, currentMonth, day);
       const dayOfWeek = dayDate.getDay();
       const initial = DAY_INITIALS[dayOfWeek];
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      const dateKey = formatDateKey(dayDate);
+      const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const isToday = dateKey === todayKey;
 
       const colClass = `${isToday ? 'col-today' : ''} ${isWeekend ? 'col-weekend' : ''}`;
-      dayNamesHtml += `<th class="habit-col-day ${colClass}">${initial}</th>`;
-      dayNumsHtml += `<th class="habit-col-day ${colClass}" data-date="${dateKey}" title="${dayDate.toDateString()}">${dayDate.getDate()}</th>`;
-    });
 
-    dayNamesHtml += `<th class="habit-col-total" rowspan="2">DONE</th>`;
+      theadRowHtml += `
+        <th class="habit-col-day ${colClass}" data-date="${dateKey}" title="${dayDate.toDateString()}">
+          <div class="day-head-cell">
+            <span class="day-head-weekday">${initial}</span>
+            <span class="day-head-number">${day}</span>
+          </div>
+        </th>
+      `;
+    }
 
-    gridThead.innerHTML = `
-      <tr class="day-names-row">${dayNamesHtml}</tr>
-      <tr class="day-nums-row">${dayNumsHtml}</tr>
-    `;
+    theadRowHtml += `<th class="habit-col-total">DONE</th>`;
+    gridThead.innerHTML = `<tr class="days-header-row">${theadRowHtml}</tr>`;
 
-    // 2. TBODY
+    // 2. TBODY: Exactly matching columns
     let tbodyHtml = '';
 
     HABITS.forEach((habit, idx) => {
@@ -345,16 +295,17 @@
         </td>
       `;
 
-      let habitTicksInView = 0;
+      let habitMonthTicks = 0;
 
-      displayedDays.forEach(dayDate => {
-        const dateKey = formatDateKey(dayDate);
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const state = getCellState(dateKey, habit.id);
         const note = getCellNote(dateKey, habit.id);
+        const dayDate = new Date(currentYear, currentMonth, day);
         const isWeekend = dayDate.getDay() === 0 || dayDate.getDay() === 6;
         const isToday = dateKey === todayKey;
 
-        if (state === 1) habitTicksInView++;
+        if (state === 1) habitMonthTicks++;
 
         let stateClass = '';
         let iconContent = '';
@@ -375,18 +326,17 @@
             <div class="grid-box ${stateClass} ${noteClass}" 
                  data-date="${dateKey}" 
                  data-habit="${habit.id}" 
-                 title="${habit.name} (${dayDate.toLocaleDateString()}): ${state === 1 ? 'Done ✓' : state === 2 ? 'Missed ✕' : 'Unchecked'}${tooltipNote}">
+                 title="${habit.name} (Day ${day}): ${state === 1 ? 'Done ✓' : state === 2 ? 'Missed ✕' : 'Unchecked'}${tooltipNote}">
               ${iconContent}
             </div>
           </td>
         `;
-      });
+      }
 
-      const totalPossible = displayedDays.length;
-      const pct = Math.round((habitTicksInView / totalPossible) * 100);
+      const habitPct = Math.round((habitMonthTicks / daysInMonth) * 100);
       rowHtml += `
-        <td class="habit-row-total" title="${habitTicksInView} of ${totalPossible} (${pct}%)">
-          ${habitTicksInView}/${totalPossible}
+        <td class="habit-row-total" title="${habitMonthTicks} of ${daysInMonth} days (${habitPct}%)">
+          ${habitMonthTicks}/${daysInMonth}
         </td>
       `;
 
@@ -396,10 +346,10 @@
 
     gridTbody.innerHTML = tbodyHtml;
 
-    // 3. TFOOT
+    // 3. TFOOT: Daily Column Summaries
     let tfootHtml = `<tr><td class="habit-name-cell"><strong>DAILY TOTAL</strong></td>`;
-    displayedDays.forEach(dayDate => {
-      const dateKey = formatDateKey(dayDate);
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       let dayCompleted = 0;
       HABITS.forEach(h => {
         if (getCellState(dateKey, h.id) === 1) dayCompleted++;
@@ -408,31 +358,28 @@
       const isToday = dateKey === todayKey;
 
       tfootHtml += `
-        <td class="${isToday ? 'col-today' : ''}" title="${dayDate.toLocaleDateString()}: ${dayCompleted}/${HABITS.length} (${pct}%)">
+        <td class="${isToday ? 'col-today' : ''}" title="Day ${day}: ${dayCompleted}/${HABITS.length} (${pct}%)">
           <div class="daily-summary-score">${dayCompleted}</div>
           <div class="daily-summary-bar">
             <div class="daily-summary-fill" style="width: ${pct}%;"></div>
           </div>
         </td>
       `;
-    });
+    }
     tfootHtml += `<td class="habit-row-total">-</td></tr>`;
     gridTfoot.innerHTML = tfootHtml;
 
     // Click & Right-click Handlers
     gridTbody.querySelectorAll('.grid-box').forEach(box => {
-      // Left click: Toggle tick / cross
-      box.addEventListener('click', function (e) {
+      box.addEventListener('click', function () {
         cycleHabitState(this.dataset.date, this.dataset.habit);
       });
 
-      // Feature 2: Right click opens Note Dialog
       box.addEventListener('contextmenu', function (e) {
         e.preventDefault();
         openNoteDialog(this.dataset.date, this.dataset.habit);
       });
 
-      // Mobile long press support for notes
       let pressTimer;
       box.addEventListener('touchstart', function () {
         pressTimer = setTimeout(() => {
@@ -445,7 +392,7 @@
     });
   }
 
-  // --- 5. FEATURE 2: MINI-NOTES DIALOG ---
+  // --- 6. MINI-NOTES DIALOG ---
   function setupNoteDialog() {
     const dialog = document.getElementById('noteDialog');
     const closeBtn = document.getElementById('closeNoteDialogBtn');
@@ -498,7 +445,7 @@
     input.focus();
   }
 
-  // --- 6. TODAY'S DAILY CHECKLIST VIEW ---
+  // --- 7. TODAY'S DAILY CHECKLIST VIEW ---
   function setupDailyView() {
     const picker = document.getElementById('dailyDatePicker');
     picker.value = selectedDailyDate;
@@ -506,10 +453,6 @@
     picker.addEventListener('change', function () {
       selectedDailyDate = this.value;
       renderDailyView();
-      if (gridScope === 'week') {
-        updateMonthDisplay();
-        renderMonthlyGrid();
-      }
     });
 
     document.getElementById('dailyPrevDay').addEventListener('click', () => {
@@ -518,10 +461,6 @@
       selectedDailyDate = formatDateKey(d);
       picker.value = selectedDailyDate;
       renderDailyView();
-      if (gridScope === 'week') {
-        updateMonthDisplay();
-        renderMonthlyGrid();
-      }
     });
 
     document.getElementById('dailyNextDay').addEventListener('click', () => {
@@ -530,10 +469,6 @@
       selectedDailyDate = formatDateKey(d);
       picker.value = selectedDailyDate;
       renderDailyView();
-      if (gridScope === 'week') {
-        updateMonthDisplay();
-        renderMonthlyGrid();
-      }
     });
 
     document.getElementById('markAllDoneBtn').addEventListener('click', () => {
@@ -630,7 +565,6 @@
         if (nextState === 2) playTickSound(false);
       });
 
-      // Feature 2: Open note dialog from daily checklist
       itemEl.querySelector('.btn-note').addEventListener('click', () => {
         openNoteDialog(selectedDailyDate, habit.id);
       });
@@ -650,7 +584,7 @@
     document.getElementById('dailyProgressBar').style.width = `${pct}%`;
   }
 
-  // --- 7. STREAKS & INSIGHTS ---
+  // --- 8. STREAKS & INSIGHTS ---
   function calculateHabitStreak(habitId, untilDateKey) {
     let streak = 0;
     let checkDate = parseDateKey(untilDateKey);
@@ -746,7 +680,7 @@
     document.getElementById('todayDoneBadge').textContent = `${done}/${HABITS.length}`;
   }
 
-  // --- 8. EVENT LISTENERS ---
+  // --- 9. EVENT LISTENERS ---
   function setupEventListeners() {
     // Navigation Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -768,36 +702,12 @@
       });
     });
 
-    // Feature 5: Scope Switcher (Month vs Week)
-    document.getElementById('btnScopeMonth').addEventListener('click', function () {
-      this.classList.add('active');
-      document.getElementById('btnScopeWeek').classList.remove('active');
-      gridScope = 'month';
-      updateMonthDisplay();
-      renderMonthlyGrid();
-    });
-
-    document.getElementById('btnScopeWeek').addEventListener('click', function () {
-      this.classList.add('active');
-      document.getElementById('btnScopeMonth').classList.remove('active');
-      gridScope = 'week';
-      updateMonthDisplay();
-      renderMonthlyGrid();
-    });
-
-    // Month / Week Navigation
+    // Month Navigation
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
-      if (gridScope === 'month') {
-        currentMonth--;
-        if (currentMonth < 0) {
-          currentMonth = 11;
-          currentYear--;
-        }
-      } else {
-        const d = parseDateKey(selectedDailyDate);
-        d.setDate(d.getDate() - 7);
-        selectedDailyDate = formatDateKey(d);
-        document.getElementById('dailyDatePicker').value = selectedDailyDate;
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
       }
       updateMonthDisplay();
       renderMonthlyGrid();
@@ -805,17 +715,10 @@
     });
 
     document.getElementById('nextMonthBtn').addEventListener('click', () => {
-      if (gridScope === 'month') {
-        currentMonth++;
-        if (currentMonth > 11) {
-          currentMonth = 0;
-          currentYear++;
-        }
-      } else {
-        const d = parseDateKey(selectedDailyDate);
-        d.setDate(d.getDate() + 7);
-        selectedDailyDate = formatDateKey(d);
-        document.getElementById('dailyDatePicker').value = selectedDailyDate;
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
       }
       updateMonthDisplay();
       renderMonthlyGrid();
@@ -834,8 +737,13 @@
       renderStatsView();
     });
 
-    // Feature 3: Theme Toggle
-    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+    // Theme Switch (iOS Toggle below Month)
+    const themeSwitch = document.getElementById('themeSwitch');
+    if (themeSwitch) {
+      themeSwitch.addEventListener('change', function () {
+        applyTheme(this.checked ? 'twilight' : 'linen');
+      });
+    }
 
     // Sound Toggle
     const soundBtn = document.getElementById('soundToggleBtn');
@@ -848,11 +756,11 @@
     });
     soundIcon.textContent = soundEnabled ? '🔔' : '🔕';
 
-    // Export Data (Includes Notes!)
+    // Export Data
     document.getElementById('exportBtn').addEventListener('click', () => {
       const exportObject = {
         app: 'Aesthetic Bullet Journal Habit Tracker',
-        version: 4,
+        version: 5,
         exportDate: new Date().toISOString(),
         trackerData,
         journalData,

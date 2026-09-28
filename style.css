@@ -1,14 +1,9 @@
 /* ==========================================================================
    Aesthetic Bullet Journal Habit Tracker & Daily To-Do Planner
-   Color Palette inspired by Image 3:
-     - Sage Green:        #8A9A86, #748570
-     - Dark Forest Green: #3B4D3C, #2B3A2C
-     - Dusty Rose/Mauve:  #C69C94, #B08279
-     - Warm Sand / Taupe: #DCD3C4, #EDE6D8, #F7F5F0
-     - Accent Gold:       #C5A869
-   Typography inspired by Image 1:
-     - Montserrat (wide tracked uppercase display headers)
-     - Playfair Display & Plus Jakarta Sans
+   - Clean, single-sheet layout (no nested backgrounds)
+   - Perfectly aligned vertical lines between headers and cells
+   - Compact columns fitting all 31 days on standard screens without horizontal sliding
+   - iOS-style switch toggle below the month navigator
    ========================================================================== */
 
 :root {
@@ -47,7 +42,7 @@
   /* Shadows */
   --shadow-sm: 0 2px 6px rgba(54, 72, 55, 0.04);
   --shadow-md: 0 4px 16px rgba(54, 72, 55, 0.08);
-  --shadow-sheet: 0 8px 30px rgba(78, 69, 52, 0.09);
+  --shadow-sheet: 0 4px 20px rgba(78, 69, 52, 0.07);
 
   /* Fonts */
   --font-display: 'Montserrat', sans-serif;
@@ -73,48 +68,48 @@ body {
   font-family: var(--font-body);
   background-color: var(--bg-app);
   color: var(--color-text-main);
-  line-height: 1.5;
+  line-height: 1.45;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  padding: 1.5rem 1rem 3rem;
+  padding: 0.75rem 0.5rem 2rem;
 }
 
-/* App Wrapper */
+/* App Wrapper - uses full screen width cleanly */
 .app-wrapper {
-  max-width: 1440px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 /* ==========================================================================
-   Header & Navigation
+   Header & Controls
    ========================================================================== */
 .aesthetic-header {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem 2rem 1.25rem;
-  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.85rem;
 }
 
 .header-top {
   text-align: center;
-  position: relative;
 }
 
 .brand-title {
   font-family: var(--font-display);
-  font-size: 2.1rem;
+  font-size: 1.85rem;
   font-weight: 500;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.3em;
   color: var(--color-forest);
   text-transform: uppercase;
-  margin-left: 0.32em; /* visual balance for wide tracking */
+  margin-left: 0.3em;
 }
 
 /* Controls Bar */
@@ -123,16 +118,16 @@ body {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.85rem;
   border-top: 1px solid var(--color-border-light);
-  padding-top: 1.1rem;
+  padding-top: 0.85rem;
 }
 
 /* Nav Tabs */
 .nav-tabs {
   display: flex;
   background: var(--bg-sheet-secondary);
-  padding: 0.3rem;
+  padding: 0.25rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
 }
@@ -140,15 +135,15 @@ body {
 .tab-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.2rem;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
   border: none;
   background: transparent;
   color: var(--color-text-muted);
   font-family: var(--font-display);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   border-radius: var(--radius-full);
   cursor: pointer;
@@ -162,7 +157,7 @@ body {
 .tab-btn.active {
   background: var(--color-forest);
   color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(43, 58, 44, 0.25);
+  box-shadow: 0 2px 6px rgba(43, 58, 44, 0.25);
 }
 
 .badge-count {
@@ -174,13 +169,20 @@ body {
   border-radius: var(--radius-full);
 }
 
-/* Month Navigation */
+/* Month Center Group + Switch */
+.month-center-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .month-nav {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   background: var(--bg-sheet-secondary);
-  padding: 0.3rem 0.6rem;
+  padding: 0.25rem 0.5rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
 }
@@ -189,9 +191,9 @@ body {
   background: transparent;
   border: none;
   color: var(--color-forest);
-  font-size: 0.95rem;
-  width: 2rem;
-  height: 2rem;
+  font-size: 0.9rem;
+  width: 1.75rem;
+  height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -207,11 +209,11 @@ body {
 .current-month-display {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.2em;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
   color: var(--color-forest);
-  padding: 0 0.5rem;
-  min-width: 175px;
+  padding: 0 0.4rem;
+  min-width: 165px;
   text-align: center;
   text-transform: uppercase;
 }
@@ -220,10 +222,10 @@ body {
   background: var(--color-sage-light);
   color: var(--color-forest);
   border: 1px solid var(--color-sage);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.05em;
-  padding: 0.25rem 0.65rem;
+  padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.2s;
@@ -234,11 +236,75 @@ body {
   color: white;
 }
 
-/* Actions */
+/* ==========================================================================
+   iOS-Style Toggle Switch (Image 4) Below Month
+   ========================================================================== */
+.theme-switch-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.theme-switch-label {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.switch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #D8CFBF;
+  border-radius: 20px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.switch-track::before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.switch-toggle input:checked + .switch-track {
+  background-color: var(--color-sage);
+}
+
+.switch-toggle input:checked + .switch-track::before {
+  transform: translateX(18px);
+}
+
+/* Action buttons */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .action-btn {
@@ -246,14 +312,14 @@ body {
   border: 1px solid var(--color-border);
   color: var(--color-forest);
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  padding: 0.5rem 0.85rem;
+  padding: 0.4rem 0.75rem;
   border-radius: var(--radius-full);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   transition: all 0.2s;
 }
 
@@ -274,302 +340,208 @@ body {
 }
 
 /* ==========================================================================
-   View Panels
+   VIEW 1: MONTHLY GRID SHEET
+   - Clean single card, no nested background frames
+   - Laser-straight vertical lines
+   - Compact widths so all 31 days fit comfortably
    ========================================================================== */
-.view-panel {
-  display: none;
-  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.view-panel.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ==========================================================================
-   VIEW 1: Monthly Grid Sheet (Image 2 style)
-   ========================================================================== */
-.tracker-sheet-frame {
-  background: var(--bg-sheet-secondary);
-  border: 2px solid var(--color-border-dark);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-sheet);
-}
-
 .sheet-paper {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
-  position: relative;
-  overflow: hidden;
+  padding: 0.85rem 1rem 1rem;
+  box-shadow: var(--shadow-sheet);
+  width: 100%;
 }
 
 .sheet-top-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  align-items: baseline;
   border-bottom: 2px solid var(--color-forest);
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.75rem;
 }
 
 .sheet-title-group {
   display: flex;
   align-items: baseline;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .sheet-main-title {
   font-family: var(--font-display);
-  font-size: 1.45rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.22em;
   color: var(--color-forest);
   text-transform: uppercase;
 }
 
 .sheet-sub-date {
   font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.18em;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
   color: var(--color-rose-hover);
   text-transform: uppercase;
 }
 
-.sparkle-deco {
-  color: var(--color-gold);
-  font-size: 1.1rem;
-}
-
-/* Legend & Filters */
-.sheet-legend-bar {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.legend-box {
-  width: 1.25rem;
-  height: 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: bold;
-}
-
-.legend-box.tick {
-  background: var(--color-sage);
-  color: white;
-}
-
-.legend-box.cross {
-  background: var(--color-rose);
-  color: white;
-}
-
-.legend-box.empty {
-  background: white;
-  border: 1px dashed var(--color-border-dark);
-}
-
-.legend-separator {
-  color: var(--color-border);
-}
-
-.filter-pills {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.filter-pill {
-  border: 1px solid var(--color-border);
-  background: var(--bg-card);
-  padding: 0.25rem 0.65rem;
-  font-size: 0.72rem;
-  font-family: var(--font-body);
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  color: var(--color-text-muted);
-  transition: all 0.2s;
-}
-
-.filter-pill:hover,
-.filter-pill.active {
-  background: var(--color-forest);
-  color: white;
-  border-color: var(--color-forest);
-}
-
-/* Grid Table Container & Table */
+/* Grid Table Container */
 .grid-table-container {
   overflow-x: auto;
   border: 1px solid var(--color-border-dark);
   background: #FFFFFF;
-  border-radius: var(--radius-sm);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02);
+  border-radius: var(--radius-xs);
+  width: 100%;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border-dark) var(--bg-sheet-secondary);
 }
 
+/* TABLE CORE: Uses border-collapse: separate with 0 spacing to guarantee
+   that sticky header borders and tbody borders line up 100% pixel-perfect! */
 .habit-grid-table {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.78rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.75rem;
   table-layout: fixed;
 }
 
-/* Columns width */
-.habit-col-name {
-  width: 220px;
-  min-width: 200px;
-  max-width: 240px;
-  position: sticky;
-  left: 0;
-  z-index: 10;
-  background: var(--bg-sheet);
-  border-right: 2px solid var(--color-forest) !important;
-}
-
-.habit-col-day {
-  width: 32px;
-  min-width: 30px;
-  text-align: center;
-}
-
-.habit-col-total {
-  width: 75px;
-  min-width: 70px;
-  text-align: center;
-  background: var(--bg-sheet-secondary);
-  border-left: 2px solid var(--color-forest) !important;
-}
-
-/* Table Headings */
-.habit-grid-table thead th {
-  background: var(--bg-sheet-secondary);
-  color: var(--color-forest);
-  font-family: var(--font-display);
-  font-weight: 600;
-  border: 1px solid var(--color-border);
-  padding: 0.35rem 0.2rem;
-  text-align: center;
-  user-select: none;
-}
-
-.habit-grid-table thead tr.day-names-row th {
-  font-size: 0.65rem;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  border-bottom: none;
-}
-
-.habit-grid-table thead tr.day-nums-row th {
-  font-size: 0.8rem;
-  border-top: none;
-  font-weight: 700;
-}
-
-/* Today Column Highlight */
-.habit-grid-table .col-today {
-  background-color: #EBF1EA !important;
-  color: var(--color-forest-dark) !important;
-}
-
-.habit-grid-table thead th.col-today {
-  border-bottom: 2px solid var(--color-sage) !important;
-  background: #E0E9DE !important;
-}
-
-/* Weekend Column Subtle Tint */
-.habit-grid-table .col-weekend {
-  background-color: #FAF8F3;
-}
-
-/* Table Body Cells */
-.habit-grid-table tbody tr {
-  transition: background-color 0.15s ease;
-}
-
-.habit-grid-table tbody tr:hover {
-  background-color: rgba(138, 154, 134, 0.06);
-}
-
-.habit-grid-table tbody td {
-  border: 1px solid var(--color-border);
-  padding: 0.3rem 0.15rem;
-  text-align: center;
-  height: 34px;
-}
-
-/* Sticky Habit Name cell */
+/* 1. Habit Name Column (Sticky Left) */
+.habit-col-name,
 .habit-name-cell {
+  width: 155px;
+  min-width: 140px;
+  max-width: 165px;
   position: sticky;
   left: 0;
   z-index: 5;
   background: var(--bg-sheet);
-  text-align: left !important;
-  padding: 0.4rem 0.75rem !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-weight: 500;
-  color: var(--color-forest);
   border-right: 2px solid var(--color-forest) !important;
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+  text-align: left;
+  padding: 0 0.5rem;
+}
+
+.habit-col-name {
+  z-index: 10;
+  background: var(--bg-sheet-secondary);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-forest);
+  border-top: 1px solid var(--color-border);
+  height: 42px;
+}
+
+.habit-col-head-text {
+  letter-spacing: 0.08em;
 }
 
 .habit-title-wrap {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.35rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.habit-category-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+.habit-number-idx {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
   flex-shrink: 0;
 }
 
-.habit-category-dot.spiritual { background: var(--color-forest); }
-.habit-category-dot.career { background: var(--color-gold); }
-.habit-category-dot.lifestyle { background: var(--color-rose); }
-
-.habit-number-idx {
-  font-size: 0.68rem;
-  color: var(--color-text-muted);
-  font-family: var(--font-display);
-}
-
 .habit-name-text {
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
-/* Interactive Grid Box */
+/* 2. Day Columns (1 to 31) */
+.habit-col-day {
+  text-align: center;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+thead th.habit-col-day {
+  background: var(--bg-sheet-secondary);
+  border-top: 1px solid var(--color-border);
+  height: 42px;
+  user-select: none;
+}
+
+.day-head-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0.15rem 0;
+  line-height: 1.15;
+}
+
+.day-head-weekday {
+  font-size: 0.62rem;
+  font-family: var(--font-display);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.day-head-number {
+  font-size: 0.76rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-forest);
+}
+
+/* 3. Done Total Column */
+.habit-col-total {
+  width: 46px;
+  min-width: 42px;
+  text-align: center;
+  background: var(--bg-sheet-secondary);
+  border-left: 2px solid var(--color-forest) !important;
+  border-bottom: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-forest);
+  box-sizing: border-box;
+}
+
+/* Today & Weekend Highlights */
+.habit-grid-table .col-today {
+  background-color: #EBF1EA !important;
+}
+
+.habit-grid-table thead th.col-today {
+  background-color: #DFE8DD !important;
+}
+
+.habit-grid-table .col-weekend {
+  background-color: #FAF8F4;
+}
+
+/* Body Cells & Boxes */
+.habit-grid-table tbody td {
+  height: 30px;
+  padding: 0;
+}
+
+.habit-grid-table tbody tr:hover td {
+  background-color: rgba(138, 154, 134, 0.05);
+}
+
 .grid-box {
   width: 100%;
   height: 100%;
@@ -578,74 +550,81 @@ body {
   justify-content: center;
   cursor: pointer;
   user-select: none;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  border-radius: 2px;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  transition: all 0.15s ease;
 }
 
 .grid-box:hover {
-  background-color: rgba(138, 154, 134, 0.18);
+  background-color: rgba(138, 154, 134, 0.2);
 }
 
-/* Ticked State ✓ (Sage Green) */
 .grid-box.state-tick {
   background-color: var(--color-sage);
   color: #FFFFFF;
-  animation: tickPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Cross State ✕ (Dusty Rose) */
 .grid-box.state-cross {
   background-color: var(--color-rose);
   color: #FFFFFF;
-  animation: tickPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes tickPop {
-  0% { transform: scale(0.6); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
+/* Golden corner triangle indicator when a cell has a mini-note */
+.grid-box.has-note::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 6px 6px 0;
+  border-color: transparent var(--color-gold) transparent transparent;
+  z-index: 2;
 }
 
-/* Total Stats Cell */
 .habit-row-total {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--color-forest);
   background: var(--bg-sheet-secondary);
+  border-left: 2px solid var(--color-forest) !important;
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
 }
 
-/* Table Footer Row */
+/* Footer Row */
 .habit-grid-table tfoot td {
   background: var(--bg-sheet-secondary);
-  border: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: var(--color-forest);
-  padding: 0.5rem 0.2rem;
+  padding: 0.35rem 0.1rem;
   text-align: center;
 }
 
 .daily-summary-score {
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
 
 .daily-summary-bar {
-  width: 100%;
-  height: 4px;
+  width: 80%;
+  height: 3px;
   background: var(--color-border);
   border-radius: 2px;
-  margin-top: 3px;
+  margin: 2px auto 0;
   overflow: hidden;
 }
 
 .daily-summary-fill {
   height: 100%;
   background: var(--color-sage);
-  border-radius: 2px;
 }
 
 /* Sheet Bottom Bar */
@@ -653,67 +632,61 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1rem;
-  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
   border-top: 1px solid var(--color-border);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
 }
 
 /* ==========================================================================
-   VIEW 2: TODAY'S TO-DO CHECKLIST (Image 3 Style)
+   VIEW 2: TODAY'S TO-DO CHECKLIST
    ========================================================================== */
 .daily-checklist-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .daily-card-header {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1.75rem;
+  padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
-  box-shadow: var(--shadow-sm);
-}
-
-.daily-date-picker-group {
-  display: flex;
-  align-items: center;
   gap: 0.75rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .daily-heading {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   color: var(--color-forest);
   text-transform: uppercase;
 }
 
 .daily-subtext {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--color-text-muted);
 }
 
 .daily-date-stepper {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .stepper-btn {
   background: var(--bg-sheet-secondary);
   border: 1px solid var(--color-border);
-  padding: 0.4rem 0.75rem;
+  padding: 0.35rem 0.65rem;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--color-forest);
   cursor: pointer;
   transition: all 0.2s;
@@ -722,15 +695,14 @@ body {
 .stepper-btn:hover {
   background: var(--color-forest);
   color: white;
-  border-color: var(--color-forest);
 }
 
 .aesthetic-date-input {
   border: 1px solid var(--color-border);
   background: #FFFFFF;
   font-family: var(--font-body);
-  font-size: 0.8rem;
-  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.55rem;
   border-radius: var(--radius-sm);
   color: var(--color-forest);
   outline: none;
@@ -741,11 +713,11 @@ body {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1.75rem;
+  padding: 1rem 1.25rem;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.65rem;
 }
 
 .progress-details {
@@ -756,16 +728,16 @@ body {
 
 .progress-label {
   font-family: var(--font-display);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   color: var(--color-text-muted);
   text-transform: uppercase;
   display: block;
 }
 
 .progress-score {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--color-forest);
 }
@@ -775,14 +747,14 @@ body {
   color: white;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.85rem;
-  padding: 0.3rem 0.85rem;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
   border-radius: var(--radius-full);
 }
 
 .progress-track {
   width: 100%;
-  height: 10px;
+  height: 8px;
   background: var(--bg-sheet-secondary);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -798,17 +770,16 @@ body {
 
 .quick-batch-actions {
   display: flex;
-  gap: 0.6rem;
-  padding-top: 0.25rem;
+  gap: 0.5rem;
 }
 
 .batch-btn {
   background: var(--color-sage-light);
   color: var(--color-sage-text);
   border: 1px solid var(--color-sage);
-  padding: 0.4rem 0.85rem;
+  padding: 0.35rem 0.75rem;
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -835,29 +806,13 @@ body {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-shadow: var(--shadow-sm);
 }
 
 .daily-unified-card .checklist-items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 0.75rem;
-}
-
-.habit-idx-badge {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  width: 1.5rem;
-  flex-shrink: 0;
-}
-
-/* Checklist Items */
-.checklist-items {
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 0.6rem;
 }
 
@@ -865,20 +820,18 @@ body {
   background: #FFFFFF;
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-sm);
-  padding: 0.65rem 0.85rem;
+  padding: 0.55rem 0.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 0.45rem;
+  transition: all 0.2s ease;
 }
 
 .daily-item-row:hover {
   border-color: var(--color-border-dark);
-  box-shadow: var(--shadow-sm);
 }
 
-/* Item State Highlight */
 .daily-item-row.state-done {
   background: #F3F8F2;
   border-color: #BCD3B7;
@@ -903,38 +856,46 @@ body {
 .item-left {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   overflow: hidden;
 }
 
-.item-streak-chip {
-  font-size: 0.68rem;
-  background: #FFF7E6;
-  color: #B27B1E;
-  padding: 0.15rem 0.4rem;
-  border-radius: var(--radius-full);
-  border: 1px solid #F0D9A6;
-  white-space: nowrap;
+.habit-idx-badge {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  width: 1.4rem;
+  flex-shrink: 0;
 }
 
 .item-text {
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: var(--color-forest);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Item Action Buttons (Tick / Cross / Reset) */
+.item-streak-chip {
+  font-size: 0.65rem;
+  background: #FFF7E6;
+  color: #B27B1E;
+  padding: 0.1rem 0.35rem;
+  border-radius: var(--radius-full);
+  border: 1px solid #F0D9A6;
+  white-space: nowrap;
+}
+
 .item-actions {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .check-btn {
-  width: 2rem;
-  height: 2rem;
+  width: 1.85rem;
+  height: 1.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -942,7 +903,7 @@ body {
   background: #FFFFFF;
   border-radius: var(--radius-xs);
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   transition: all 0.15s ease;
 }
 
@@ -968,15 +929,31 @@ body {
   border-color: var(--color-rose);
 }
 
-.check-btn.btn-reset {
+.check-btn.btn-note {
   color: var(--color-text-muted);
   font-size: 0.75rem;
-  opacity: 0.6;
+  opacity: 0.7;
+}
+
+.check-btn.btn-note:hover {
+  opacity: 1;
+  color: var(--color-forest);
+}
+
+.check-btn.btn-note.has-note {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+  opacity: 1;
+}
+
+.check-btn.btn-reset {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  opacity: 0.55;
 }
 
 .check-btn.btn-reset:hover {
   opacity: 1;
-  background: var(--bg-sheet-secondary);
 }
 
 /* Daily Reflection / Basic Journal Prompt */
@@ -984,11 +961,11 @@ body {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1.75rem;
+  padding: 1rem 1.25rem;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.5rem;
 }
 
 .journal-card-header {
@@ -999,15 +976,15 @@ body {
 
 .journal-title {
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.15em;
   color: var(--color-forest);
   text-transform: uppercase;
 }
 
 .journal-status {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--color-sage-hover);
 }
 
@@ -1016,18 +993,13 @@ body {
   border: 1px solid var(--color-border);
   background: #FFFFFF;
   border-radius: var(--radius-sm);
-  padding: 0.85rem;
+  padding: 0.75rem;
   font-family: var(--font-serif);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--color-forest);
   resize: vertical;
-  line-height: 1.6;
+  line-height: 1.5;
   outline: none;
-  transition: border-color 0.2s;
-}
-
-.journal-textarea:focus {
-  border-color: var(--color-forest);
 }
 
 /* ==========================================================================
@@ -1036,36 +1008,36 @@ body {
 .stats-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .stats-overview-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
 }
 
 .stat-card {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.25rem;
+  padding: 1rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
   box-shadow: var(--shadow-sm);
 }
 
 .stat-icon {
-  width: 3rem;
-  height: 3rem;
+  width: 2.6rem;
+  height: 2.6rem;
   background: var(--bg-sheet-secondary);
   border: 1px solid var(--color-border);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .stat-meta {
@@ -1075,13 +1047,13 @@ body {
 
 .stat-value {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-forest);
 }
 
 .stat-label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1091,17 +1063,17 @@ body {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-shadow: var(--shadow-sm);
 }
 
 .breakdown-title {
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.15em;
   color: var(--color-forest);
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .table-responsive {
@@ -1111,33 +1083,29 @@ body {
 .stats-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
 .stats-table th {
   background: var(--bg-sheet-secondary);
   color: var(--color-forest);
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-align: left;
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 0.85rem;
   border-bottom: 2px solid var(--color-border-dark);
 }
 
 .stats-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--color-border-light);
   color: var(--color-forest);
 }
 
-.stats-table tr:hover {
-  background-color: var(--bg-card-hover);
-}
-
 .stats-progress-bar {
-  width: 120px;
+  width: 100px;
   height: 6px;
   background: var(--bg-sheet-secondary);
   border-radius: 3px;
@@ -1151,82 +1119,108 @@ body {
 }
 
 /* ==========================================================================
-   Footer
+   Aesthetic Mini-Note Dialog
    ========================================================================== */
-.app-footer {
-  display: none;
+.aesthetic-dialog {
+  border: none;
+  background: transparent;
+  padding: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sheet);
+  max-width: 400px;
+  width: 90%;
+  margin: auto;
+}
+
+.aesthetic-dialog::backdrop {
+  background: rgba(20, 28, 21, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.dialog-box {
+  background: var(--bg-sheet);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.dialog-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-forest);
+}
+
+.dialog-subdate {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.dialog-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0.15rem;
+}
+
+.dialog-text-input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: var(--bg-card);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.dialog-text-input:focus {
+  border-color: var(--color-forest);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.btn-dialog-secondary {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-rose-hover);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-dialog-primary {
+  background: var(--color-forest);
+  border: 1px solid var(--color-forest);
+  color: #FFFFFF;
+  padding: 0.35rem 0.95rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* ==========================================================================
-   Print Stylesheet (Prints beautifully like the physical yellow sheet!)
-   ========================================================================== */
-@media print {
-  body {
-    background: #FFFFFF;
-    padding: 0;
-  }
-  .controls-bar, .app-footer, .filter-pills, .daily-date-stepper, .quick-batch-actions {
-    display: none !important;
-  }
-  .view-panel {
-    display: none !important;
-  }
-  #viewGrid {
-    display: block !important;
-  }
-  .tracker-sheet-frame {
-    border: none;
-    padding: 0;
-    box-shadow: none;
-  }
-  .sheet-paper {
-    border: 1px solid #333333;
-  }
-  .habit-grid-table {
-    font-size: 8pt;
-  }
-}
-
-/* ==========================================================================
-   Responsive Adaptations
-   ========================================================================== */
-@media (max-width: 768px) {
-  .brand-title {
-    font-size: 1.5rem;
-    letter-spacing: 0.2em;
-  }
-  .aesthetic-header {
-    padding: 1rem;
-  }
-  .controls-bar {
-    justify-content: center;
-  }
-  .nav-tabs {
-    width: 100%;
-    justify-content: center;
-  }
-  .tab-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.68rem;
-  }
-  .sheet-top-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .sheet-legend-bar {
-    width: 100%;
-  }
-  .habit-col-name {
-    width: 160px;
-    min-width: 150px;
-  }
-  .daily-categories-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ==========================================================================
-   FEATURE 3: Twilight / Warm Dark Night Mode Theme
+   TWILIGHT NIGHT MODE
    ========================================================================== */
 [data-theme="twilight"] {
   --bg-app: #141B15;
@@ -1258,7 +1252,7 @@ body {
 
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
-  --shadow-sheet: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --shadow-sheet: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="twilight"] .grid-table-container {
@@ -1276,7 +1270,8 @@ body {
 [data-theme="twilight"] .daily-item-row,
 [data-theme="twilight"] .check-btn,
 [data-theme="twilight"] .aesthetic-date-input,
-[data-theme="twilight"] .journal-textarea {
+[data-theme="twilight"] .journal-textarea,
+[data-theme="twilight"] .dialog-text-input {
   background: #202B22;
   color: #E5DFD5;
 }
@@ -1292,206 +1287,45 @@ body {
 }
 
 /* ==========================================================================
-   FEATURE 5: "This Week" (7d) vs "Full Month" (31d) Scope Selector
+   Print & Responsive
    ========================================================================== */
-.grid-scope-controls {
-  display: flex;
-  background: var(--bg-sheet-secondary);
-  border: 1px solid var(--color-border);
-  padding: 0.25rem;
-  border-radius: var(--radius-full);
-  gap: 0.25rem;
+.view-panel {
+  display: none;
+  animation: fadeIn 0.25s ease;
 }
 
-.scope-toggle-btn {
-  border: none;
-  background: transparent;
-  color: var(--color-text-muted);
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: all 0.2s;
+.view-panel.active {
+  display: block;
 }
 
-.scope-toggle-btn:hover {
-  color: var(--color-forest);
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.scope-toggle-btn.active {
-  background: var(--color-forest);
-  color: var(--bg-sheet);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+.app-footer {
+  display: none;
 }
 
-/* When viewing week mode, make day columns comfortably wide */
-.habit-grid-table.mode-week .habit-col-day {
-  width: auto;
-  min-width: 65px;
-}
-
-/* ==========================================================================
-   FEATURE 2: Mini-Notes & Note Popover
-   ========================================================================== */
-.grid-box {
-  position: relative;
-}
-
-/* Golden corner triangle indicator when a cell has a mini-note */
-.grid-box.has-note::before {
-  content: '';
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 6px 6px 0;
-  border-color: transparent var(--color-gold) transparent transparent;
-  z-index: 2;
-}
-
-.check-btn.btn-note {
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  opacity: 0.7;
-}
-
-.check-btn.btn-note:hover {
-  opacity: 1;
-  color: var(--color-forest);
-  background: var(--bg-sheet-secondary);
-}
-
-.check-btn.btn-note.has-note {
-  color: var(--color-gold);
-  border-color: var(--color-gold);
-  opacity: 1;
-}
-
-/* Aesthetic Note Dialog */
-.aesthetic-dialog {
-  border: none;
-  background: transparent;
-  padding: 0;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sheet);
-  max-width: 420px;
-  width: 90%;
-  margin: auto;
-}
-
-.aesthetic-dialog::backdrop {
-  background: rgba(20, 28, 21, 0.55);
-  backdrop-filter: blur(4px);
-}
-
-.dialog-box {
-  background: var(--bg-sheet);
-  border: 1px solid var(--color-border-dark);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.dialog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.dialog-title-wrap {
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog-title {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--color-forest);
-}
-
-.dialog-subdate {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-}
-
-.dialog-close-btn {
-  background: transparent;
-  border: none;
-  font-size: 1.1rem;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: 0.2rem;
-  line-height: 1;
-}
-
-.dialog-close-btn:hover {
-  color: var(--color-forest);
-}
-
-.dialog-body {
-  width: 100%;
-}
-
-.dialog-text-input {
-  width: 100%;
-  border: 1px solid var(--color-border);
-  background: var(--bg-card);
-  color: var(--color-text-main);
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  padding: 0.75rem 0.85rem;
-  border-radius: var(--radius-sm);
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.dialog-text-input:focus {
-  border-color: var(--color-forest);
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.6rem;
-}
-
-.btn-dialog-secondary {
-  background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-rose-hover);
-  padding: 0.45rem 0.85rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-dialog-secondary:hover {
-  background: var(--color-rose-light);
-}
-
-.btn-dialog-primary {
-  background: var(--color-forest);
-  border: 1px solid var(--color-forest);
-  color: #FFFFFF;
-  padding: 0.45rem 1.1rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-dialog-primary:hover {
-  background: var(--color-forest-light);
+@media print {
+  body {
+    background: #FFFFFF;
+    padding: 0;
+  }
+  .controls-bar, .app-footer, .daily-date-stepper, .quick-batch-actions {
+    display: none !important;
+  }
+  .view-panel {
+    display: none !important;
+  }
+  #viewGrid {
+    display: block !important;
+  }
+  .sheet-paper {
+    border: 1px solid #333333;
+    box-shadow: none;
+  }
+  .habit-grid-table {
+    font-size: 7.5pt;
+  }
 }
