@@ -1,0 +1,17 @@
+{
+  "name": "Aesthetic Habit Tracker",
+  "short_name": "Habits",
+  "description": "Minimalist bullet journal habit tracker and daily checklist",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F5F2EB",
+  "theme_color": "#364837",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

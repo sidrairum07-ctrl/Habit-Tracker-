@@ -1224,3 +1224,274 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   FEATURE 3: Twilight / Warm Dark Night Mode Theme
+   ========================================================================== */
+[data-theme="twilight"] {
+  --bg-app: #141B15;
+  --bg-sheet: #1C261E;
+  --bg-sheet-secondary: #233025;
+  --bg-card: #202B22;
+  --bg-card-hover: #29382B;
+
+  --color-forest: #EBE5DB;
+  --color-forest-dark: #FFFFFF;
+  --color-forest-light: #90B38D;
+
+  --color-sage: #6B8E67;
+  --color-sage-light: #28362A;
+  --color-sage-hover: #7FA77B;
+  --color-sage-text: #EBE5DB;
+
+  --color-rose: #B8766D;
+  --color-rose-light: #3D2928;
+  --color-rose-hover: #CB8A81;
+  --color-rose-text: #F7E4E1;
+
+  --color-border: #2C3A2E;
+  --color-border-dark: #3E5141;
+  --color-border-light: #232F25;
+  --color-text-main: #E5DFD5;
+  --color-text-muted: #95A196;
+  --color-gold: #D8BD80;
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-sheet: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="twilight"] .grid-table-container {
+  background: #1C261E;
+}
+
+[data-theme="twilight"] .habit-grid-table .col-weekend {
+  background-color: #19231A;
+}
+
+[data-theme="twilight"] .habit-grid-table .col-today {
+  background-color: #293A2C !important;
+}
+
+[data-theme="twilight"] .daily-item-row,
+[data-theme="twilight"] .check-btn,
+[data-theme="twilight"] .aesthetic-date-input,
+[data-theme="twilight"] .journal-textarea {
+  background: #202B22;
+  color: #E5DFD5;
+}
+
+[data-theme="twilight"] .daily-item-row.state-done {
+  background: #253927;
+  border-color: #4A6E4D;
+}
+
+[data-theme="twilight"] .daily-item-row.state-missed {
+  background: #3B2726;
+  border-color: #7A4540;
+}
+
+/* ==========================================================================
+   FEATURE 5: "This Week" (7d) vs "Full Month" (31d) Scope Selector
+   ========================================================================== */
+.grid-scope-controls {
+  display: flex;
+  background: var(--bg-sheet-secondary);
+  border: 1px solid var(--color-border);
+  padding: 0.25rem;
+  border-radius: var(--radius-full);
+  gap: 0.25rem;
+}
+
+.scope-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.scope-toggle-btn:hover {
+  color: var(--color-forest);
+}
+
+.scope-toggle-btn.active {
+  background: var(--color-forest);
+  color: var(--bg-sheet);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* When viewing week mode, make day columns comfortably wide */
+.habit-grid-table.mode-week .habit-col-day {
+  width: auto;
+  min-width: 65px;
+}
+
+/* ==========================================================================
+   FEATURE 2: Mini-Notes & Note Popover
+   ========================================================================== */
+.grid-box {
+  position: relative;
+}
+
+/* Golden corner triangle indicator when a cell has a mini-note */
+.grid-box.has-note::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 6px 6px 0;
+  border-color: transparent var(--color-gold) transparent transparent;
+  z-index: 2;
+}
+
+.check-btn.btn-note {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.check-btn.btn-note:hover {
+  opacity: 1;
+  color: var(--color-forest);
+  background: var(--bg-sheet-secondary);
+}
+
+.check-btn.btn-note.has-note {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+  opacity: 1;
+}
+
+/* Aesthetic Note Dialog */
+.aesthetic-dialog {
+  border: none;
+  background: transparent;
+  padding: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sheet);
+  max-width: 420px;
+  width: 90%;
+  margin: auto;
+}
+
+.aesthetic-dialog::backdrop {
+  background: rgba(20, 28, 21, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.dialog-box {
+  background: var(--bg-sheet);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.dialog-title-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-forest);
+}
+
+.dialog-subdate {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.dialog-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  line-height: 1;
+}
+
+.dialog-close-btn:hover {
+  color: var(--color-forest);
+}
+
+.dialog-body {
+  width: 100%;
+}
+
+.dialog-text-input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: var(--bg-card);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dialog-text-input:focus {
+  border-color: var(--color-forest);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.btn-dialog-secondary {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-rose-hover);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-dialog-secondary:hover {
+  background: var(--color-rose-light);
+}
+
+.btn-dialog-primary {
+  background: var(--color-forest);
+  border: 1px solid var(--color-forest);
+  color: #FFFFFF;
+  padding: 0.45rem 1.1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-dialog-primary:hover {
+  background: var(--color-forest-light);
+}

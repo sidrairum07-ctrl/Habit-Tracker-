@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aesthetic Habit Tracker & Bullet Journal</title>
   
+  <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="theme-color" content="#364837">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Habits">
+
   <!-- Google Fonts: Montserrat (wide display headers), Playfair Display (aesthetic text), Plus Jakarta Sans (clean UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,6 +57,11 @@
 
         <!-- Actions & Tools -->
         <div class="header-actions">
+          <!-- Feature 3: Twilight Theme Toggle -->
+          <button class="action-btn theme-btn" id="themeToggleBtn" title="Toggle Twilight Night Mode">
+            <span id="themeIcon">🌙</span>
+            <span id="themeLabel">Twilight</span>
+          </button>
           <button class="action-btn" id="soundToggleBtn" title="Toggle Sound Feedback">
             <span id="soundIcon">🔔</span>
           </button>
@@ -68,16 +82,22 @@
     <!-- MAIN VIEW CONTAINER -->
     <main class="main-content">
       
-      <!-- ==================== VIEW 1: MONTHLY GRID (Image 2 style) ==================== -->
+      <!-- ==================== VIEW 1: MONTHLY GRID ==================== -->
       <section id="viewGrid" class="view-panel active">
         <div class="tracker-sheet-frame">
           <div class="sheet-paper">
             
-            <!-- Clean Sheet Header (No shiny emojis, no category filters) -->
+            <!-- Clean Sheet Header with Feature 5: Month vs Week Toggle -->
             <div class="sheet-top-header">
               <div class="sheet-title-group">
                 <span class="sheet-main-title" id="sheetMonthLabel">MONTHLY HABIT TRACKER</span>
                 <span class="sheet-sub-date" id="sheetDateSubtitle">SEPTEMBER 2026</span>
+              </div>
+
+              <!-- Feature 5: Scope Selector (Full Month vs This Week) -->
+              <div class="grid-scope-controls">
+                <button class="scope-toggle-btn active" id="btnScopeMonth" data-scope="month">Full Month</button>
+                <button class="scope-toggle-btn" id="btnScopeWeek" data-scope="week">This Week</button>
               </div>
             </div>
 
@@ -85,21 +105,21 @@
             <div class="grid-table-container" id="gridTableContainer">
               <table class="habit-grid-table" id="habitGridTable">
                 <thead id="gridThead">
-                  <!-- Generated via JS: Days 1 to 31 with Day of Week initials -->
+                  <!-- Generated via JS -->
                 </thead>
                 <tbody id="gridTbody">
-                  <!-- Generated via JS: 21 Habit Rows with Interactive Cells -->
+                  <!-- Generated via JS -->
                 </tbody>
                 <tfoot id="gridTfoot">
-                  <!-- Generated via JS: Daily Completion Count & Percentage Row -->
+                  <!-- Generated via JS -->
                 </tfoot>
               </table>
             </div>
 
-            <!-- Sheet Footer Guide (Monthly consistency removed completely) -->
+            <!-- Sheet Footer Guide with Feature 2 hint -->
             <div class="sheet-bottom-bar">
               <div class="guide-tip">
-                Click any box to toggle: <strong>Empty → ✓ Tick → ✕ Cross → Empty</strong>
+                Click box: <strong>Empty → ✓ Tick → ✕ Cross</strong> &bull; Right-click or hold box to add a <strong>Mini-Note 📝</strong>
               </div>
             </div>
 
@@ -147,10 +167,10 @@
             </div>
           </div>
 
-          <!-- Single Unified Checklist (No separate category columns) -->
+          <!-- Single Unified Checklist -->
           <div class="daily-unified-card">
             <div class="checklist-items" id="dailyItemsList">
-              <!-- All 21 items injected via JS in exact rearranged order -->
+              <!-- Injected via JS -->
             </div>
           </div>
 
@@ -227,10 +247,30 @@
 
     </main>
 
-    <!-- Footer completely clean as requested -->
+    <!-- Clean footer -->
     <footer class="app-footer"></footer>
 
   </div>
+
+  <!-- Feature 2: Minimalist Note Popover / Dialog -->
+  <dialog id="noteDialog" class="aesthetic-dialog">
+    <div class="dialog-box">
+      <div class="dialog-header">
+        <div class="dialog-title-wrap">
+          <h3 class="dialog-title" id="noteDialogTitle">Add Habit Note</h3>
+          <span class="dialog-subdate" id="noteDialogDate">Date</span>
+        </div>
+        <button type="button" class="dialog-close-btn" id="closeNoteDialogBtn">✕</button>
+      </div>
+      <div class="dialog-body">
+        <input type="text" id="noteTextInput" class="dialog-text-input" placeholder="e.g. Solved 2 LeetCode Tree problems, Surah Al-Kahf..." maxlength="120">
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn-dialog-secondary" id="deleteNoteBtn">Clear Note</button>
+        <button type="button" class="btn-dialog-primary" id="saveNoteBtn">Save</button>
+      </div>
+    </div>
+  </dialog>
 
   <script src="app.js"></script>
 </body>

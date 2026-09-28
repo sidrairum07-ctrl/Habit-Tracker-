@@ -1,6 +1,10 @@
 /**
  * Aesthetic Habit Tracker & Daily To-Do Planner
- * Clean, minimalist version without category splits or shiny emojis
+ * Includes Features:
+ *  1. PWA Service Worker
+ *  2. Mini-Notes (Right-click cell or tap ✎)
+ *  3. Twilight Night Mode Theme
+ *  5. This Week vs Full Month Scope
  */
 
 (function () {
@@ -43,26 +47,43 @@
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth(); // 0-indexed
   let selectedDailyDate = formatDateKey(today); // 'YYYY-MM-DD'
+  let gridScope = 'month'; // 'month' or 'week'
+  let currentTheme = 'linen'; // 'linen' or 'twilight'
   let soundEnabled = true;
 
-  // Storage: { "YYYY-MM-DD": { [habitId]: 1 (tick) | 2 (cross) } }
-  let trackerData = {};
-  // Journal: { "YYYY-MM-DD": "text..." }
-  let journalData = {};
+  // Active dialog context
+  let activeNoteContext = { dateKey: null, habitId: null };
 
-  const STORAGE_KEY = 'bullet_tracker_data_v3';
-  const JOURNAL_KEY = 'bullet_journal_data_v3';
-  const SOUND_KEY = 'bullet_tracker_sound_v3';
+  // Data storage
+  let trackerData = {}; // { dateKey: { habitId: 1 | 2 } }
+  let journalData = {}; // { dateKey: "text" }
+  let notesData = {};   // { dateKey: { habitId: "note text" } }
+
+  const STORAGE_KEY = 'bullet_tracker_data_v4';
+  const JOURNAL_KEY = 'bullet_journal_data_v4';
+  const NOTES_KEY = 'bullet_notes_data_v4';
+  const SOUND_KEY = 'bullet_tracker_sound_v4';
+  const THEME_KEY = 'bullet_theme_v4';
 
   // --- 3. INIT ---
   function init() {
     loadFromLocalStorage();
+    initTheme();
     setupEventListeners();
+    setupNoteDialog();
     updateMonthDisplay();
     renderMonthlyGrid();
     setupDailyView();
     renderDailyView();
     renderStatsView();
+    registerServiceWorker();
+  }
+
+  // Feature 1: PWA Service Worker
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+    }
   }
 
   function formatDateKey(date) {
@@ -72,52 +93,80 @@
     return `${y}-${m}-${d}`;
   }
 
+  function parseDateKey(key) {
+    const [y, m, d] = key.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
   function loadFromLocalStorage() {
     try {
-      // Support migrating v2 data if v3 is not set yet
-      const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('bullet_tracker_data_v2');
-      if (saved) {
-        trackerData = JSON.parse(saved);
-      }
-      const savedJournals = localStorage.getItem(JOURNAL_KEY) || localStorage.getItem('bullet_journal_data_v2');
-      if (savedJournals) {
-        journalData = JSON.parse(savedJournals);
-      }
+      const savedTracker = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('bullet_tracker_data_v3');
+      if (savedTracker) trackerData = JSON.parse(savedTracker);
+
+      const savedJournals = localStorage.getItem(JOURNAL_KEY) || localStorage.getItem('bullet_journal_data_v3');
+      if (savedJournals) journalData = JSON.parse(savedJournals);
+
+      const savedNotes = localStorage.getItem(NOTES_KEY);
+      if (savedNotes) notesData = JSON.parse(savedNotes);
+
       const savedSound = localStorage.getItem(SOUND_KEY);
-      if (savedSound !== null) {
-        soundEnabled = savedSound === 'true';
-      }
+      if (savedSound !== null) soundEnabled = savedSound === 'true';
+
+      const savedTheme = localStorage.getItem(THEME_KEY);
+      if (savedTheme) currentTheme = savedTheme;
     } catch (e) {
-      console.warn('Failed to parse localStorage data:', e);
-      trackerData = {};
-      journalData = {};
+      console.warn('Storage parse error:', e);
     }
   }
 
   function saveToLocalStorage() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(trackerData));
-    } catch (e) {
-      console.warn('Failed to save trackerData:', e);
-    }
+    } catch (e) {}
   }
 
   function saveJournalToLocalStorage() {
     try {
       localStorage.setItem(JOURNAL_KEY, JSON.stringify(journalData));
-    } catch (e) {
-      console.warn('Failed to save journalData:', e);
-    }
+    } catch (e) {}
   }
 
-  // Audio feedback
+  function saveNotesToLocalStorage() {
+    try {
+      localStorage.setItem(NOTES_KEY, JSON.stringify(notesData));
+    } catch (e) {}
+  }
+
+  // Feature 3: Theme Management
+  function initTheme() {
+    applyTheme(currentTheme);
+  }
+
+  function applyTheme(theme) {
+    currentTheme = theme;
+    if (theme === 'twilight') {
+      document.documentElement.setAttribute('data-theme', 'twilight');
+      document.getElementById('themeIcon').textContent = '☀️';
+      document.getElementById('themeLabel').textContent = 'Linen';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      document.getElementById('themeIcon').textContent = '🌙';
+      document.getElementById('themeLabel').textContent = 'Twilight';
+    }
+    localStorage.setItem(THEME_KEY, currentTheme);
+  }
+
+  function toggleTheme() {
+    applyTheme(currentTheme === 'twilight' ? 'linen' : 'twilight');
+  }
+
+  // Audio synthesizer
   function playTickSound(isTick) {
     if (!soundEnabled) return;
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!AudioContext) return;
       const ctx = new AudioContext();
-
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
@@ -138,9 +187,7 @@
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.14);
-    } catch (e) {
-      // AudioContext policy
-    }
+    } catch (e) {}
   }
 
   function getCellState(dateKey, habitId) {
@@ -149,18 +196,32 @@
   }
 
   function setCellState(dateKey, habitId, state) {
-    if (!trackerData[dateKey]) {
-      trackerData[dateKey] = {};
-    }
+    if (!trackerData[dateKey]) trackerData[dateKey] = {};
     if (state === 0) {
       delete trackerData[dateKey][habitId];
-      if (Object.keys(trackerData[dateKey]).length === 0) {
-        delete trackerData[dateKey];
-      }
+      if (Object.keys(trackerData[dateKey]).length === 0) delete trackerData[dateKey];
     } else {
       trackerData[dateKey][habitId] = state;
     }
     saveToLocalStorage();
+    onDataUpdated();
+  }
+
+  function getCellNote(dateKey, habitId) {
+    if (!notesData[dateKey]) return '';
+    return notesData[dateKey][habitId] || '';
+  }
+
+  function setCellNote(dateKey, habitId, noteText) {
+    const trimmed = (noteText || '').trim();
+    if (!notesData[dateKey]) notesData[dateKey] = {};
+    if (!trimmed) {
+      delete notesData[dateKey][habitId];
+      if (Object.keys(notesData[dateKey]).length === 0) delete notesData[dateKey];
+    } else {
+      notesData[dateKey][habitId] = trimmed;
+    }
+    saveNotesToLocalStorage();
     onDataUpdated();
   }
 
@@ -188,38 +249,78 @@
     return new Date(year, month + 1, 0).getDate();
   }
 
-  // --- 4. MONTHLY GRID VIEW (Image 2 style) ---
+  // Feature 5: Get 7 days for "This Week" mode
+  function getDaysForCurrentScope() {
+    if (gridScope === 'month') {
+      const daysCount = getDaysInMonth(currentYear, currentMonth);
+      const days = [];
+      for (let d = 1; d <= daysCount; d++) {
+        days.push(new Date(currentYear, currentMonth, d));
+      }
+      return days;
+    } else {
+      // Week mode: Find Monday of selected date's week
+      const target = parseDateKey(selectedDailyDate);
+      const dayOfWeek = target.getDay(); // 0 is Sun, 1 is Mon
+      const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      const monday = new Date(target);
+      monday.setDate(target.getDate() + diffToMon);
+
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        days.push(d);
+      }
+      return days;
+    }
+  }
+
+  // --- 4. MONTHLY / WEEKLY GRID VIEW ---
   function updateMonthDisplay() {
-    const label = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
-    document.getElementById('currentMonthYear').textContent = label;
-    document.getElementById('sheetDateSubtitle').textContent = label;
+    if (gridScope === 'month') {
+      const label = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+      document.getElementById('currentMonthYear').textContent = label;
+      document.getElementById('sheetDateSubtitle').textContent = label;
+    } else {
+      const days = getDaysForCurrentScope();
+      const first = days[0];
+      const last = days[6];
+      const firstStr = `${first.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      const lastStr = `${last.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+      const label = `${firstStr} – ${lastStr}`;
+      document.getElementById('currentMonthYear').textContent = label.toUpperCase();
+      document.getElementById('sheetDateSubtitle').textContent = label.toUpperCase();
+    }
   }
 
   function renderMonthlyGrid() {
-    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+    const table = document.getElementById('habitGridTable');
+    if (gridScope === 'week') table.classList.add('mode-week');
+    else table.classList.remove('mode-week');
+
+    const displayedDays = getDaysForCurrentScope();
     const gridThead = document.getElementById('gridThead');
     const gridTbody = document.getElementById('gridTbody');
     const gridTfoot = document.getElementById('gridTfoot');
 
     const todayKey = formatDateKey(new Date());
 
-    // 1. Build THEAD
+    // 1. THEAD
     let dayNamesHtml = `<th class="habit-col-name" rowspan="2">HABIT (${HABITS.length})</th>`;
     let dayNumsHtml = '';
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dayDate = new Date(currentYear, currentMonth, day);
+    displayedDays.forEach(dayDate => {
       const dayOfWeek = dayDate.getDay();
       const initial = DAY_INITIALS[dayOfWeek];
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dateKey = formatDateKey(dayDate);
       const isToday = dateKey === todayKey;
 
       const colClass = `${isToday ? 'col-today' : ''} ${isWeekend ? 'col-weekend' : ''}`;
-
       dayNamesHtml += `<th class="habit-col-day ${colClass}">${initial}</th>`;
-      dayNumsHtml += `<th class="habit-col-day ${colClass}" data-date="${dateKey}" title="${dayDate.toDateString()}">${day}</th>`;
-    }
+      dayNumsHtml += `<th class="habit-col-day ${colClass}" data-date="${dateKey}" title="${dayDate.toDateString()}">${dayDate.getDate()}</th>`;
+    });
 
     dayNamesHtml += `<th class="habit-col-total" rowspan="2">DONE</th>`;
 
@@ -228,13 +329,13 @@
       <tr class="day-nums-row">${dayNumsHtml}</tr>
     `;
 
-    // 2. Build TBODY: 21 Habits (Clean, no category dots)
+    // 2. TBODY
     let tbodyHtml = '';
 
     HABITS.forEach((habit, idx) => {
       let rowHtml = `<tr data-habit-id="${habit.id}">`;
 
-      // Sticky Habit Name Cell
+      // Sticky habit cell
       rowHtml += `
         <td class="habit-name-cell">
           <div class="habit-title-wrap">
@@ -244,17 +345,16 @@
         </td>
       `;
 
-      // Day Cells
-      let habitMonthTicks = 0;
+      let habitTicksInView = 0;
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      displayedDays.forEach(dayDate => {
+        const dateKey = formatDateKey(dayDate);
         const state = getCellState(dateKey, habit.id);
-        const dayDate = new Date(currentYear, currentMonth, day);
+        const note = getCellNote(dateKey, habit.id);
         const isWeekend = dayDate.getDay() === 0 || dayDate.getDay() === 6;
         const isToday = dateKey === todayKey;
 
-        if (state === 1) habitMonthTicks++;
+        if (state === 1) habitTicksInView++;
 
         let stateClass = '';
         let iconContent = '';
@@ -266,25 +366,27 @@
           iconContent = '✕';
         }
 
+        const noteClass = note ? 'has-note' : '';
         const cellColClass = `${isToday ? 'col-today' : ''} ${isWeekend ? 'col-weekend' : ''}`;
+        const tooltipNote = note ? `\n📝 Note: "${note}"` : '\n(Right-click to add note)';
 
         rowHtml += `
           <td class="${cellColClass}">
-            <div class="grid-box ${stateClass}" 
+            <div class="grid-box ${stateClass} ${noteClass}" 
                  data-date="${dateKey}" 
                  data-habit="${habit.id}" 
-                 title="${habit.name} on Day ${day}: ${state === 1 ? 'Done ✓' : state === 2 ? 'Missed ✕' : 'Click to mark'}">
+                 title="${habit.name} (${dayDate.toLocaleDateString()}): ${state === 1 ? 'Done ✓' : state === 2 ? 'Missed ✕' : 'Unchecked'}${tooltipNote}">
               ${iconContent}
             </div>
           </td>
         `;
-      }
+      });
 
-      // Total in month
-      const habitPct = Math.round((habitMonthTicks / daysInMonth) * 100);
+      const totalPossible = displayedDays.length;
+      const pct = Math.round((habitTicksInView / totalPossible) * 100);
       rowHtml += `
-        <td class="habit-row-total" title="${habitMonthTicks} of ${daysInMonth} days (${habitPct}%)">
-          ${habitMonthTicks}/${daysInMonth}
+        <td class="habit-row-total" title="${habitTicksInView} of ${totalPossible} (${pct}%)">
+          ${habitTicksInView}/${totalPossible}
         </td>
       `;
 
@@ -294,10 +396,10 @@
 
     gridTbody.innerHTML = tbodyHtml;
 
-    // 3. Build TFOOT: Daily Column Totals
+    // 3. TFOOT
     let tfootHtml = `<tr><td class="habit-name-cell"><strong>DAILY TOTAL</strong></td>`;
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    displayedDays.forEach(dayDate => {
+      const dateKey = formatDateKey(dayDate);
       let dayCompleted = 0;
       HABITS.forEach(h => {
         if (getCellState(dateKey, h.id) === 1) dayCompleted++;
@@ -306,28 +408,97 @@
       const isToday = dateKey === todayKey;
 
       tfootHtml += `
-        <td class="${isToday ? 'col-today' : ''}" title="Day ${day}: ${dayCompleted}/${HABITS.length} (${pct}%)">
+        <td class="${isToday ? 'col-today' : ''}" title="${dayDate.toLocaleDateString()}: ${dayCompleted}/${HABITS.length} (${pct}%)">
           <div class="daily-summary-score">${dayCompleted}</div>
           <div class="daily-summary-bar">
             <div class="daily-summary-fill" style="width: ${pct}%;"></div>
           </div>
         </td>
       `;
-    }
+    });
     tfootHtml += `<td class="habit-row-total">-</td></tr>`;
     gridTfoot.innerHTML = tfootHtml;
 
-    // Attach click listeners to grid boxes
+    // Click & Right-click Handlers
     gridTbody.querySelectorAll('.grid-box').forEach(box => {
-      box.addEventListener('click', function () {
-        const dateKey = this.dataset.date;
-        const habitId = this.dataset.habit;
-        cycleHabitState(dateKey, habitId);
+      // Left click: Toggle tick / cross
+      box.addEventListener('click', function (e) {
+        cycleHabitState(this.dataset.date, this.dataset.habit);
+      });
+
+      // Feature 2: Right click opens Note Dialog
+      box.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        openNoteDialog(this.dataset.date, this.dataset.habit);
+      });
+
+      // Mobile long press support for notes
+      let pressTimer;
+      box.addEventListener('touchstart', function () {
+        pressTimer = setTimeout(() => {
+          openNoteDialog(box.dataset.date, box.dataset.habit);
+        }, 600);
+      }, { passive: true });
+      box.addEventListener('touchend', function () {
+        clearTimeout(pressTimer);
       });
     });
   }
 
-  // --- 5. TODAY'S DAILY CHECKLIST VIEW (Single unified list) ---
+  // --- 5. FEATURE 2: MINI-NOTES DIALOG ---
+  function setupNoteDialog() {
+    const dialog = document.getElementById('noteDialog');
+    const closeBtn = document.getElementById('closeNoteDialogBtn');
+    const saveBtn = document.getElementById('saveNoteBtn');
+    const deleteBtn = document.getElementById('deleteNoteBtn');
+    const input = document.getElementById('noteTextInput');
+
+    closeBtn.addEventListener('click', () => dialog.close());
+
+    saveBtn.addEventListener('click', () => {
+      if (activeNoteContext.dateKey && activeNoteContext.habitId) {
+        setCellNote(activeNoteContext.dateKey, activeNoteContext.habitId, input.value);
+      }
+      dialog.close();
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      if (activeNoteContext.dateKey && activeNoteContext.habitId) {
+        setCellNote(activeNoteContext.dateKey, activeNoteContext.habitId, '');
+      }
+      dialog.close();
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveBtn.click();
+      }
+    });
+  }
+
+  function openNoteDialog(dateKey, habitId) {
+    const habit = HABITS.find(h => h.id === habitId);
+    if (!habit) return;
+
+    activeNoteContext = { dateKey, habitId };
+
+    const dialog = document.getElementById('noteDialog');
+    const titleEl = document.getElementById('noteDialogTitle');
+    const dateEl = document.getElementById('noteDialogDate');
+    const input = document.getElementById('noteTextInput');
+
+    const d = parseDateKey(dateKey);
+    titleEl.textContent = `${habit.name} Note`;
+    dateEl.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    input.value = getCellNote(dateKey, habitId);
+
+    dialog.showModal();
+    input.focus();
+  }
+
+  // --- 6. TODAY'S DAILY CHECKLIST VIEW ---
   function setupDailyView() {
     const picker = document.getElementById('dailyDatePicker');
     picker.value = selectedDailyDate;
@@ -335,22 +506,34 @@
     picker.addEventListener('change', function () {
       selectedDailyDate = this.value;
       renderDailyView();
+      if (gridScope === 'week') {
+        updateMonthDisplay();
+        renderMonthlyGrid();
+      }
     });
 
     document.getElementById('dailyPrevDay').addEventListener('click', () => {
-      const d = new Date(selectedDailyDate + 'T00:00:00');
+      const d = parseDateKey(selectedDailyDate);
       d.setDate(d.getDate() - 1);
       selectedDailyDate = formatDateKey(d);
       picker.value = selectedDailyDate;
       renderDailyView();
+      if (gridScope === 'week') {
+        updateMonthDisplay();
+        renderMonthlyGrid();
+      }
     });
 
     document.getElementById('dailyNextDay').addEventListener('click', () => {
-      const d = new Date(selectedDailyDate + 'T00:00:00');
+      const d = parseDateKey(selectedDailyDate);
       d.setDate(d.getDate() + 1);
       selectedDailyDate = formatDateKey(d);
       picker.value = selectedDailyDate;
       renderDailyView();
+      if (gridScope === 'week') {
+        updateMonthDisplay();
+        renderMonthlyGrid();
+      }
     });
 
     document.getElementById('markAllDoneBtn').addEventListener('click', () => {
@@ -384,7 +567,7 @@
   }
 
   function renderDailyView() {
-    const curDate = new Date(selectedDailyDate + 'T00:00:00');
+    const curDate = parseDateKey(selectedDailyDate);
     const isToday = selectedDailyDate === formatDateKey(new Date());
 
     document.getElementById('dailyViewDateTitle').textContent = isToday ? "TODAY'S CHECKLIST" : "DAILY CHECKLIST";
@@ -406,6 +589,7 @@
 
     HABITS.forEach((habit, idx) => {
       const state = getCellState(selectedDailyDate, habit.id);
+      const note = getCellNote(selectedDailyDate, habit.id);
       const streak = calculateHabitStreak(habit.id, selectedDailyDate);
 
       if (state === 1) totalDone++;
@@ -415,39 +599,43 @@
       if (state === 2) rowStateClass = 'state-missed';
 
       const streakBadge = streak > 0 ? `<span class="item-streak-chip">🔥 ${streak}d</span>` : '';
+      const noteClass = note ? 'has-note' : '';
+      const noteTitle = note ? `Note: "${note}"` : 'Add note';
 
       const itemEl = document.createElement('div');
       itemEl.className = `daily-item-row ${rowStateClass}`;
       itemEl.innerHTML = `
         <div class="item-left">
           <span class="habit-idx-badge">${String(idx + 1).padStart(2, '0')}.</span>
-          <span class="item-text" title="${habit.name}">${habit.name}</span>
+          <span class="item-text" title="${habit.name}${note ? ' — ' + note : ''}">${habit.name}</span>
           ${streakBadge}
         </div>
         <div class="item-actions">
           <button class="check-btn btn-tick" title="Mark Done (Tick)">✓</button>
           <button class="check-btn btn-cross" title="Mark Missed (Cross)">✕</button>
+          <button class="check-btn btn-note ${noteClass}" title="${noteTitle}">✎</button>
           <button class="check-btn btn-reset" title="Reset">↺</button>
         </div>
       `;
 
-      const tickBtn = itemEl.querySelector('.btn-tick');
-      const crossBtn = itemEl.querySelector('.btn-cross');
-      const resetBtn = itemEl.querySelector('.btn-reset');
-
-      tickBtn.addEventListener('click', () => {
+      itemEl.querySelector('.btn-tick').addEventListener('click', () => {
         const nextState = state === 1 ? 0 : 1;
         setCellState(selectedDailyDate, habit.id, nextState);
         if (nextState === 1) playTickSound(true);
       });
 
-      crossBtn.addEventListener('click', () => {
+      itemEl.querySelector('.btn-cross').addEventListener('click', () => {
         const nextState = state === 2 ? 0 : 2;
         setCellState(selectedDailyDate, habit.id, nextState);
         if (nextState === 2) playTickSound(false);
       });
 
-      resetBtn.addEventListener('click', () => {
+      // Feature 2: Open note dialog from daily checklist
+      itemEl.querySelector('.btn-note').addEventListener('click', () => {
+        openNoteDialog(selectedDailyDate, habit.id);
+      });
+
+      itemEl.querySelector('.btn-reset').addEventListener('click', () => {
         setCellState(selectedDailyDate, habit.id, 0);
       });
 
@@ -462,10 +650,10 @@
     document.getElementById('dailyProgressBar').style.width = `${pct}%`;
   }
 
-  // --- 6. STREAKS & INSIGHTS ---
+  // --- 7. STREAKS & INSIGHTS ---
   function calculateHabitStreak(habitId, untilDateKey) {
     let streak = 0;
-    let checkDate = new Date(untilDateKey + 'T00:00:00');
+    let checkDate = parseDateKey(untilDateKey);
 
     const stateToday = getCellState(formatDateKey(checkDate), habitId);
     if (stateToday !== 1) {
@@ -558,8 +746,9 @@
     document.getElementById('todayDoneBadge').textContent = `${done}/${HABITS.length}`;
   }
 
-  // --- 7. EVENT LISTENERS ---
+  // --- 8. EVENT LISTENERS ---
   function setupEventListeners() {
+    // Navigation Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -579,11 +768,36 @@
       });
     });
 
+    // Feature 5: Scope Switcher (Month vs Week)
+    document.getElementById('btnScopeMonth').addEventListener('click', function () {
+      this.classList.add('active');
+      document.getElementById('btnScopeWeek').classList.remove('active');
+      gridScope = 'month';
+      updateMonthDisplay();
+      renderMonthlyGrid();
+    });
+
+    document.getElementById('btnScopeWeek').addEventListener('click', function () {
+      this.classList.add('active');
+      document.getElementById('btnScopeMonth').classList.remove('active');
+      gridScope = 'week';
+      updateMonthDisplay();
+      renderMonthlyGrid();
+    });
+
+    // Month / Week Navigation
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
-      currentMonth--;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
+      if (gridScope === 'month') {
+        currentMonth--;
+        if (currentMonth < 0) {
+          currentMonth = 11;
+          currentYear--;
+        }
+      } else {
+        const d = parseDateKey(selectedDailyDate);
+        d.setDate(d.getDate() - 7);
+        selectedDailyDate = formatDateKey(d);
+        document.getElementById('dailyDatePicker').value = selectedDailyDate;
       }
       updateMonthDisplay();
       renderMonthlyGrid();
@@ -591,10 +805,17 @@
     });
 
     document.getElementById('nextMonthBtn').addEventListener('click', () => {
-      currentMonth++;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
+      if (gridScope === 'month') {
+        currentMonth++;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        }
+      } else {
+        const d = parseDateKey(selectedDailyDate);
+        d.setDate(d.getDate() + 7);
+        selectedDailyDate = formatDateKey(d);
+        document.getElementById('dailyDatePicker').value = selectedDailyDate;
       }
       updateMonthDisplay();
       renderMonthlyGrid();
@@ -613,6 +834,10 @@
       renderStatsView();
     });
 
+    // Feature 3: Theme Toggle
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+
+    // Sound Toggle
     const soundBtn = document.getElementById('soundToggleBtn');
     const soundIcon = document.getElementById('soundIcon');
     soundBtn.addEventListener('click', () => {
@@ -623,13 +848,15 @@
     });
     soundIcon.textContent = soundEnabled ? '🔔' : '🔕';
 
+    // Export Data (Includes Notes!)
     document.getElementById('exportBtn').addEventListener('click', () => {
       const exportObject = {
         app: 'Aesthetic Bullet Journal Habit Tracker',
-        version: 3,
+        version: 4,
         exportDate: new Date().toISOString(),
         trackerData,
-        journalData
+        journalData,
+        notesData
       };
       const jsonStr = JSON.stringify(exportObject, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -643,6 +870,7 @@
       URL.revokeObjectURL(url);
     });
 
+    // Import Data
     const importFileInput = document.getElementById('importFileInput');
     document.getElementById('importBtn').addEventListener('click', () => {
       importFileInput.click();
@@ -658,11 +886,11 @@
           const imported = JSON.parse(e.target.result);
           if (imported.trackerData) {
             trackerData = { ...trackerData, ...imported.trackerData };
-            if (imported.journalData) {
-              journalData = { ...journalData, ...imported.journalData };
-            }
+            if (imported.journalData) journalData = { ...journalData, ...imported.journalData };
+            if (imported.notesData) notesData = { ...notesData, ...imported.notesData };
             saveToLocalStorage();
             saveJournalToLocalStorage();
+            saveNotesToLocalStorage();
             onDataUpdated();
             alert('Backup restored successfully!');
           } else {
