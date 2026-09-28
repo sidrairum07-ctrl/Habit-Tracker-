@@ -1,33 +1,34 @@
 /**
- * Aesthetic Bullet Journal Habit Tracker & Daily To-Do Planner
- * Complete State Management, Grid Rendering, Daily View & Persistence
+ * Aesthetic Habit Tracker & Daily To-Do Planner
+ * Clean, minimalist version without category splits or shiny emojis
  */
 
 (function () {
   'use strict';
 
-  // --- 1. HABITS DEFINITION (Exact 20 items requested) ---
+  // --- 1. REARRANGED 21 HABITS ---
   const HABITS = [
-    { id: 'fajr', name: 'Fajr', category: 'spiritual' },
-    { id: 'morning_duas', name: 'Morning Duas', category: 'spiritual' },
-    { id: 'quran_tilawah', name: 'Quran Tilawah', category: 'spiritual' },
-    { id: 'daily_dhikr', name: 'Daily Dhikr', category: 'spiritual' },
-    { id: 'exercise', name: 'Exercise (15-20mins)', category: 'lifestyle' },
-    { id: 'zuhur', name: 'Zuhur', category: 'spiritual' },
-    { id: 'dsa', name: 'DSA (min 1hr)', category: 'career' },
-    { id: 'roadmap', name: 'Roadmap (1hr)', category: 'career' },
-    { id: 'evening_duas', name: 'Evening Duas', category: 'spiritual' },
-    { id: 'asr', name: 'Asr', category: 'spiritual' },
-    { id: 'no_junk_food', name: 'No Junk Food', category: 'lifestyle' },
-    { id: 'no_music', name: 'No Music', category: 'spiritual' },
-    { id: 'maghrib', name: 'Maghrib', category: 'spiritual' },
-    { id: 'clean_tidy', name: 'Clean/Tidy Something', category: 'lifestyle' },
-    { id: 'isha', name: 'Isha', category: 'spiritual' },
-    { id: 'limit_screentime', name: 'Limit Screentime', category: 'lifestyle' },
-    { id: 'read_10mins', name: 'Read - 10 mins', category: 'career' },
-    { id: 'write_journal', name: 'Write Journal Basic', category: 'career' },
-    { id: 'skincare', name: 'Skincare', category: 'lifestyle' },
-    { id: 'sleep', name: 'Sleep (6-7 hrs)', category: 'lifestyle' }
+    { id: 'fajr', name: 'Fajr' },
+    { id: 'morning_duas', name: 'Morning Duas' },
+    { id: 'quran_tilawah', name: 'Quran Tilawah' },
+    { id: 'daily_dhikr', name: 'Daily Dhikr' },
+    { id: 'exercise', name: 'Exercise (15-20mins)' },
+    { id: 'zuhur', name: 'Zuhur' },
+    { id: 'evening_duas', name: 'Evening Duas' },
+    { id: 'asr', name: 'Asr' },
+    { id: 'dsa', name: 'DSA' },
+    { id: 'roadmap', name: 'Roadmap' },
+    { id: 'maghrib', name: 'Maghrib' },
+    { id: 'academics', name: 'Academics' },
+    { id: 'clean_tidy', name: 'Clean/Tidy Something' },
+    { id: 'isha', name: 'Isha' },
+    { id: 'no_junk_food', name: 'No Junk Food' },
+    { id: 'no_music', name: 'No Music' },
+    { id: 'limit_screentime', name: 'Limit Screentime' },
+    { id: 'read_10mins', name: 'Read - 10 mins' },
+    { id: 'write_journal', name: 'Write Journal Basic' },
+    { id: 'skincare', name: 'Skincare' },
+    { id: 'sleep', name: 'Sleep (6-7 hrs)' }
   ];
 
   const MONTH_NAMES = [
@@ -37,24 +38,23 @@
 
   const DAY_INITIALS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  // --- 2. APPLICATION STATE ---
+  // --- 2. STATE ---
   const today = new Date();
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth(); // 0-indexed
   let selectedDailyDate = formatDateKey(today); // 'YYYY-MM-DD'
-  let activeCategoryFilter = 'all';
   let soundEnabled = true;
 
-  // Storage data structure: { "YYYY-MM-DD": { [habitId]: 1 (tick) | 2 (cross) } }
+  // Storage: { "YYYY-MM-DD": { [habitId]: 1 (tick) | 2 (cross) } }
   let trackerData = {};
-  // Journal data structure: { "YYYY-MM-DD": "text notes..." }
+  // Journal: { "YYYY-MM-DD": "text..." }
   let journalData = {};
 
-  const STORAGE_KEY = 'bullet_tracker_data_v2';
-  const JOURNAL_KEY = 'bullet_journal_data_v2';
-  const SOUND_KEY = 'bullet_tracker_sound_v2';
+  const STORAGE_KEY = 'bullet_tracker_data_v3';
+  const JOURNAL_KEY = 'bullet_journal_data_v3';
+  const SOUND_KEY = 'bullet_tracker_sound_v3';
 
-  // --- 3. INITIALIZATION ---
+  // --- 3. INIT ---
   function init() {
     loadFromLocalStorage();
     setupEventListeners();
@@ -65,7 +65,6 @@
     renderStatsView();
   }
 
-  // Helper: Format date to 'YYYY-MM-DD'
   function formatDateKey(date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -73,14 +72,14 @@
     return `${y}-${m}-${d}`;
   }
 
-  // Load saved data
   function loadFromLocalStorage() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      // Support migrating v2 data if v3 is not set yet
+      const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('bullet_tracker_data_v2');
       if (saved) {
         trackerData = JSON.parse(saved);
       }
-      const savedJournals = localStorage.getItem(JOURNAL_KEY);
+      const savedJournals = localStorage.getItem(JOURNAL_KEY) || localStorage.getItem('bullet_journal_data_v2');
       if (savedJournals) {
         journalData = JSON.parse(savedJournals);
       }
@@ -95,12 +94,11 @@
     }
   }
 
-  // Save to localStorage
   function saveToLocalStorage() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(trackerData));
     } catch (e) {
-      console.warn('Failed to save trackerData to localStorage:', e);
+      console.warn('Failed to save trackerData:', e);
     }
   }
 
@@ -108,11 +106,11 @@
     try {
       localStorage.setItem(JOURNAL_KEY, JSON.stringify(journalData));
     } catch (e) {
-      console.warn('Failed to save journalData to localStorage:', e);
+      console.warn('Failed to save journalData:', e);
     }
   }
 
-  // --- 4. AUDIO SYNTHESIZER (Pleasant soft aesthetic clicks) ---
+  // Audio feedback
   function playTickSound(isTick) {
     if (!soundEnabled) return;
     try {
@@ -125,13 +123,11 @@
 
       osc.type = 'sine';
       if (isTick) {
-        // High soft chime for completion
         osc.frequency.setValueAtTime(680, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
         gain.gain.setValueAtTime(0.12, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
       } else {
-        // Gentle woodblock thud for cross
         osc.frequency.setValueAtTime(320, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(240, ctx.currentTime + 0.08);
         gain.gain.setValueAtTime(0.1, ctx.currentTime);
@@ -143,11 +139,10 @@
       osc.start();
       osc.stop(ctx.currentTime + 0.14);
     } catch (e) {
-      // AudioContext may be restricted by browser policy before first user gesture
+      // AudioContext policy
     }
   }
 
-  // --- 5. DATA GETTERS & SETTERS ---
   function getCellState(dateKey, habitId) {
     if (!trackerData[dateKey]) return 0;
     return trackerData[dateKey][habitId] || 0;
@@ -169,7 +164,6 @@
     onDataUpdated();
   }
 
-  // Called whenever data changes to refresh views
   function onDataUpdated() {
     renderMonthlyGrid();
     renderDailyView();
@@ -177,7 +171,6 @@
     updateTodayBadge();
   }
 
-  // Toggle habit cell state: 0 (empty) -> 1 (tick) -> 2 (cross) -> 0
   function cycleHabitState(dateKey, habitId) {
     const current = getCellState(dateKey, habitId);
     let next = 0;
@@ -191,12 +184,11 @@
     else if (next === 2) playTickSound(false);
   }
 
-  // Days in current viewing month
   function getDaysInMonth(year, month) {
     return new Date(year, month + 1, 0).getDate();
   }
 
-  // --- 6. MONTHLY GRID VIEW (Inspired by Image 2 - Yellow Grid Tracker) ---
+  // --- 4. MONTHLY GRID VIEW (Image 2 style) ---
   function updateMonthDisplay() {
     const label = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
     document.getElementById('currentMonthYear').textContent = label;
@@ -211,7 +203,7 @@
 
     const todayKey = formatDateKey(new Date());
 
-    // 1. Build THEAD: Day of Week row + Day Number row
+    // 1. Build THEAD
     let dayNamesHtml = `<th class="habit-col-name" rowspan="2">HABIT (${HABITS.length})</th>`;
     let dayNumsHtml = '';
 
@@ -236,23 +228,16 @@
       <tr class="day-nums-row">${dayNumsHtml}</tr>
     `;
 
-    // 2. Build TBODY: One row per habit
+    // 2. Build TBODY: 21 Habits (Clean, no category dots)
     let tbodyHtml = '';
-    let totalChecksThisMonth = 0;
-    let totalPossibleCells = HABITS.length * daysInMonth;
 
     HABITS.forEach((habit, idx) => {
-      // Check category filter
-      const isHidden = activeCategoryFilter !== 'all' && habit.category !== activeCategoryFilter;
-      const rowStyle = isHidden ? 'display: none;' : '';
-
-      let rowHtml = `<tr style="${rowStyle}" data-habit-id="${habit.id}">`;
+      let rowHtml = `<tr data-habit-id="${habit.id}">`;
 
       // Sticky Habit Name Cell
       rowHtml += `
         <td class="habit-name-cell">
           <div class="habit-title-wrap">
-            <span class="habit-category-dot ${habit.category}" title="${habit.category}"></span>
             <span class="habit-number-idx">${String(idx + 1).padStart(2, '0')}.</span>
             <span class="habit-name-text">${habit.name}</span>
           </div>
@@ -269,10 +254,7 @@
         const isWeekend = dayDate.getDay() === 0 || dayDate.getDay() === 6;
         const isToday = dateKey === todayKey;
 
-        if (state === 1) {
-          habitMonthTicks++;
-          totalChecksThisMonth++;
-        }
+        if (state === 1) habitMonthTicks++;
 
         let stateClass = '';
         let iconContent = '';
@@ -298,7 +280,7 @@
         `;
       }
 
-      // Habit Total in Month
+      // Total in month
       const habitPct = Math.round((habitMonthTicks / daysInMonth) * 100);
       rowHtml += `
         <td class="habit-row-total" title="${habitMonthTicks} of ${daysInMonth} days (${habitPct}%)">
@@ -312,7 +294,7 @@
 
     gridTbody.innerHTML = tbodyHtml;
 
-    // 3. Build TFOOT: Daily Column Summaries
+    // 3. Build TFOOT: Daily Column Totals
     let tfootHtml = `<tr><td class="habit-name-cell"><strong>DAILY TOTAL</strong></td>`;
     for (let day = 1; day <= daysInMonth; day++) {
       const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -332,14 +314,8 @@
         </td>
       `;
     }
-    const monthConsistency = totalPossibleCells > 0 ? Math.round((totalChecksThisMonth / totalPossibleCells) * 100) : 0;
-    tfootHtml += `<td class="habit-row-total">${monthConsistency}%</td></tr>`;
+    tfootHtml += `<td class="habit-row-total">-</td></tr>`;
     gridTfoot.innerHTML = tfootHtml;
-
-    // Update Bottom Summary
-    document.getElementById('monthOverallStat').innerHTML = `
-      Monthly Consistency: <strong>${monthConsistency}%</strong> (${totalChecksThisMonth}/${totalPossibleCells} checks)
-    `;
 
     // Attach click listeners to grid boxes
     gridTbody.querySelectorAll('.grid-box').forEach(box => {
@@ -351,7 +327,7 @@
     });
   }
 
-  // --- 7. TODAY'S DAILY CHECKLIST VIEW ---
+  // --- 5. TODAY'S DAILY CHECKLIST VIEW (Single unified list) ---
   function setupDailyView() {
     const picker = document.getElementById('dailyDatePicker');
     picker.value = selectedDailyDate;
@@ -377,7 +353,6 @@
       renderDailyView();
     });
 
-    // Batch Actions
     document.getElementById('markAllDoneBtn').addEventListener('click', () => {
       HABITS.forEach(h => {
         if (getCellState(selectedDailyDate, h.id) !== 1) {
@@ -395,7 +370,6 @@
       }
     });
 
-    // Daily Journal Textarea
     const journalInput = document.getElementById('dailyJournalInput');
     journalInput.addEventListener('input', function () {
       journalData[selectedDailyDate] = this.value;
@@ -413,8 +387,7 @@
     const curDate = new Date(selectedDailyDate + 'T00:00:00');
     const isToday = selectedDailyDate === formatDateKey(new Date());
 
-    // Update Titles
-    document.getElementById('dailyViewDateTitle').textContent = isToday ? "TODAY'S TO-DO CHECKLIST" : "DAILY TO-DO CHECKLIST";
+    document.getElementById('dailyViewDateTitle').textContent = isToday ? "TODAY'S CHECKLIST" : "DAILY CHECKLIST";
     document.getElementById('dailyViewDateSub').textContent = curDate.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
@@ -422,32 +395,20 @@
       year: 'numeric'
     });
 
-    // Populate Journal Input
     const journalInput = document.getElementById('dailyJournalInput');
     journalInput.value = journalData[selectedDailyDate] || '';
     document.getElementById('journalSavedNotice').textContent = 'Auto-saved';
 
-    // Group habits by category
-    const spiritualList = document.getElementById('listSpiritual');
-    const careerList = document.getElementById('listCareer');
-    const lifestyleList = document.getElementById('listLifestyle');
-
-    spiritualList.innerHTML = '';
-    careerList.innerHTML = '';
-    lifestyleList.innerHTML = '';
+    const itemsContainer = document.getElementById('dailyItemsList');
+    itemsContainer.innerHTML = '';
 
     let totalDone = 0;
-    let counts = { spiritual: [0, 0], career: [0, 0], lifestyle: [0, 0] };
 
-    HABITS.forEach((habit) => {
+    HABITS.forEach((habit, idx) => {
       const state = getCellState(selectedDailyDate, habit.id);
       const streak = calculateHabitStreak(habit.id, selectedDailyDate);
 
-      counts[habit.category][1]++;
-      if (state === 1) {
-        totalDone++;
-        counts[habit.category][0]++;
-      }
+      if (state === 1) totalDone++;
 
       let rowStateClass = '';
       if (state === 1) rowStateClass = 'state-done';
@@ -459,7 +420,7 @@
       itemEl.className = `daily-item-row ${rowStateClass}`;
       itemEl.innerHTML = `
         <div class="item-left">
-          <span class="habit-category-dot ${habit.category}"></span>
+          <span class="habit-idx-badge">${String(idx + 1).padStart(2, '0')}.</span>
           <span class="item-text" title="${habit.name}">${habit.name}</span>
           ${streakBadge}
         </div>
@@ -470,7 +431,6 @@
         </div>
       `;
 
-      // Click Handlers for Item Actions
       const tickBtn = itemEl.querySelector('.btn-tick');
       const crossBtn = itemEl.querySelector('.btn-cross');
       const resetBtn = itemEl.querySelector('.btn-reset');
@@ -491,17 +451,9 @@
         setCellState(selectedDailyDate, habit.id, 0);
       });
 
-      if (habit.category === 'spiritual') spiritualList.appendChild(itemEl);
-      else if (habit.category === 'career') careerList.appendChild(itemEl);
-      else lifestyleList.appendChild(itemEl);
+      itemsContainer.appendChild(itemEl);
     });
 
-    // Update Category Counts
-    document.getElementById('countSpiritual').textContent = `${counts.spiritual[0]}/${counts.spiritual[1]}`;
-    document.getElementById('countCareer').textContent = `${counts.career[0]}/${counts.career[1]}`;
-    document.getElementById('countLifestyle').textContent = `${counts.lifestyle[0]}/${counts.lifestyle[1]}`;
-
-    // Update Daily Progress Bar
     const totalHabits = HABITS.length;
     const pct = Math.round((totalDone / totalHabits) * 100);
 
@@ -510,12 +462,11 @@
     document.getElementById('dailyProgressBar').style.width = `${pct}%`;
   }
 
-  // --- 8. STREAKS & INSIGHTS VIEW ---
+  // --- 6. STREAKS & INSIGHTS ---
   function calculateHabitStreak(habitId, untilDateKey) {
     let streak = 0;
     let checkDate = new Date(untilDateKey + 'T00:00:00');
 
-    // If today is unchecked, check if yesterday was checked
     const stateToday = getCellState(formatDateKey(checkDate), habitId);
     if (stateToday !== 1) {
       checkDate.setDate(checkDate.getDate() - 1);
@@ -541,7 +492,7 @@
 
     const todayKey = formatDateKey(new Date());
 
-    HABITS.forEach(h => {
+    HABITS.forEach((h, idx) => {
       let checks = 0;
       let misses = 0;
       for (let day = 1; day <= daysInMonth; day++) {
@@ -556,6 +507,7 @@
 
       const rate = Math.round((checks / daysInMonth) * 100);
       habitSuccessMap.push({
+        num: idx + 1,
         ...h,
         checks,
         misses,
@@ -564,27 +516,23 @@
       });
     });
 
-    // Top habit
     habitSuccessMap.sort((a, b) => b.rate - a.rate);
     const topHabit = habitSuccessMap[0] && habitSuccessMap[0].checks > 0 ? habitSuccessMap[0].name : 'None yet';
-
     const avgDailyRate = Math.round((totalMonthChecks / (HABITS.length * daysInMonth)) * 100);
 
-    // Update stat cards
     document.getElementById('statLongestStreak').textContent = `${bestStreak} Days`;
     document.getElementById('statTotalChecks').textContent = totalMonthChecks;
     document.getElementById('statAvgCompletion').textContent = `${avgDailyRate}%`;
     document.getElementById('statTopHabit').textContent = topHabit;
 
-    // Render Stats Table
     const tbody = document.getElementById('statsTableBody');
     let tableHtml = '';
 
     habitSuccessMap.forEach(item => {
       tableHtml += `
         <tr>
+          <td><span class="habit-number-idx">${String(item.num).padStart(2, '0')}</span></td>
           <td><strong>${item.name}</strong></td>
-          <td><span class="habit-category-dot ${item.category}" style="display:inline-block; margin-right:4px;"></span> ${item.category.toUpperCase()}</td>
           <td><span style="color:var(--color-sage-hover); font-weight:600;">${item.checks} days</span></td>
           <td><span style="color:var(--color-rose-hover);">${item.misses} days</span></td>
           <td><strong>${item.rate}%</strong></td>
@@ -610,9 +558,8 @@
     document.getElementById('todayDoneBadge').textContent = `${done}/${HABITS.length}`;
   }
 
-  // --- 9. EVENT LISTENERS & SETUP ---
+  // --- 7. EVENT LISTENERS ---
   function setupEventListeners() {
-    // Navigation Tabs (Monthly Grid vs Today's To-Do vs Insights)
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -632,7 +579,6 @@
       });
     });
 
-    // Month Navigation
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
       currentMonth--;
       if (currentMonth < 0) {
@@ -667,17 +613,6 @@
       renderStatsView();
     });
 
-    // Category Filter Pills on Grid View
-    document.querySelectorAll('.filter-pill').forEach(pill => {
-      pill.addEventListener('click', function () {
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        this.classList.add('active');
-        activeCategoryFilter = this.dataset.category;
-        renderMonthlyGrid();
-      });
-    });
-
-    // Sound Toggle
     const soundBtn = document.getElementById('soundToggleBtn');
     const soundIcon = document.getElementById('soundIcon');
     soundBtn.addEventListener('click', () => {
@@ -688,11 +623,10 @@
     });
     soundIcon.textContent = soundEnabled ? '🔔' : '🔕';
 
-    // Export Data (JSON Download)
     document.getElementById('exportBtn').addEventListener('click', () => {
       const exportObject = {
         app: 'Aesthetic Bullet Journal Habit Tracker',
-        version: 2,
+        version: 3,
         exportDate: new Date().toISOString(),
         trackerData,
         journalData
@@ -702,14 +636,13 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `bullet_habit_tracker_backup_${formatDateKey(new Date())}.json`;
+      a.download = `habit_tracker_backup_${formatDateKey(new Date())}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
 
-    // Import Data
     const importFileInput = document.getElementById('importFileInput');
     document.getElementById('importBtn').addEventListener('click', () => {
       importFileInput.click();
@@ -731,7 +664,7 @@
             saveToLocalStorage();
             saveJournalToLocalStorage();
             onDataUpdated();
-            alert('✦ Backup restored successfully!');
+            alert('Backup restored successfully!');
           } else {
             alert('Invalid backup file format.');
           }
@@ -740,16 +673,14 @@
         }
       };
       reader.readAsText(file);
-      this.value = ''; // Reset input
+      this.value = '';
     });
 
-    // Print Tracker
     document.getElementById('printBtn').addEventListener('click', () => {
       window.print();
     });
   }
 
-  // Run on page load
   document.addEventListener('DOMContentLoaded', init);
 
 })();

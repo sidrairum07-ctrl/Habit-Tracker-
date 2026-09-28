@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aesthetic Habit Tracker & Bullet Journal</title>
   
-  <!-- Google Fonts: Montserrat (wide display), Playfair Display (aesthetic headers), Plus Jakarta Sans (clean UI) -->
+  <!-- Google Fonts: Montserrat (wide display headers), Playfair Display (aesthetic text), Plus Jakarta Sans (clean UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -17,9 +17,7 @@
     <!-- Top Aesthetic Navigation & Controls -->
     <header class="aesthetic-header">
       <div class="header-top">
-        <div class="brand-sparkle">✦ ✧ ✦</div>
         <h1 class="brand-title">HABIT TRACKER</h1>
-        <p class="brand-subtitle">DAILY DISCIPLINE & MINDFUL LIVING</p>
       </div>
 
       <div class="controls-bar">
@@ -32,10 +30,10 @@
           <button class="tab-btn" id="tabDaily" data-view="daily">
             <span class="tab-icon">✓</span>
             <span>TODAY'S TO-DO</span>
-            <span class="badge-count" id="todayDoneBadge">0/20</span>
+            <span class="badge-count" id="todayDoneBadge">0/21</span>
           </button>
           <button class="tab-btn" id="tabStats" data-view="stats">
-            <span class="tab-icon">✦</span>
+            <span class="tab-icon">📊</span>
             <span>INSIGHTS</span>
           </button>
         </div>
@@ -75,27 +73,11 @@
         <div class="tracker-sheet-frame">
           <div class="sheet-paper">
             
-            <!-- Sheet Header / Rotated Sidebar -->
+            <!-- Clean Sheet Header (No shiny emojis, no category filters) -->
             <div class="sheet-top-header">
               <div class="sheet-title-group">
-                <span class="sparkle-deco">✦</span>
                 <span class="sheet-main-title" id="sheetMonthLabel">MONTHLY HABIT TRACKER</span>
-                <span class="sparkle-deco">✦</span>
                 <span class="sheet-sub-date" id="sheetDateSubtitle">SEPTEMBER 2026</span>
-              </div>
-              
-              <!-- Category Filter & Legend -->
-              <div class="sheet-legend-bar">
-                <div class="legend-item"><span class="legend-box tick">✓</span> Completed</div>
-                <div class="legend-item"><span class="legend-box cross">✕</span> Missed</div>
-                <div class="legend-item"><span class="legend-box empty"></span> Unchecked</div>
-                <div class="legend-separator">|</div>
-                <div class="filter-pills">
-                  <button class="filter-pill active" data-category="all">All (20)</button>
-                  <button class="filter-pill" data-category="spiritual">Spiritual (10)</button>
-                  <button class="filter-pill" data-category="career">DSA & Study (4)</button>
-                  <button class="filter-pill" data-category="lifestyle">Health & Habit (6)</button>
-                </div>
               </div>
             </div>
 
@@ -106,7 +88,7 @@
                   <!-- Generated via JS: Days 1 to 31 with Day of Week initials -->
                 </thead>
                 <tbody id="gridTbody">
-                  <!-- Generated via JS: 20 Habit Rows with Interactive Cells -->
+                  <!-- Generated via JS: 21 Habit Rows with Interactive Cells -->
                 </tbody>
                 <tfoot id="gridTfoot">
                   <!-- Generated via JS: Daily Completion Count & Percentage Row -->
@@ -114,13 +96,10 @@
               </table>
             </div>
 
-            <!-- Sheet Footer Notes -->
+            <!-- Sheet Footer Guide (Monthly consistency removed completely) -->
             <div class="sheet-bottom-bar">
               <div class="guide-tip">
-                <span class="tip-star">✧</span> Click any box to toggle: <strong>Empty → ✓ Tick → ✕ Cross → Empty</strong>
-              </div>
-              <div class="month-overall-stat" id="monthOverallStat">
-                Monthly Consistency: <strong>0%</strong> (0/0 checks)
+                Click any box to toggle: <strong>Empty → ✓ Tick → ✕ Cross → Empty</strong>
               </div>
             </div>
 
@@ -135,7 +114,6 @@
           <!-- Daily Header Banner -->
           <div class="daily-card-header">
             <div class="daily-date-picker-group">
-              <span class="sparkle-deco">✧</span>
               <div class="daily-heading-texts">
                 <h2 class="daily-heading" id="dailyViewDateTitle">TODAY'S CHECKLIST</h2>
                 <p class="daily-subtext" id="dailyViewDateSub">Monday, September 28, 2026</p>
@@ -154,7 +132,7 @@
             <div class="progress-details">
               <div class="progress-text-block">
                 <span class="progress-label">Today's Progress</span>
-                <span class="progress-score" id="dailyScoreDisplay">0 of 20 Completed</span>
+                <span class="progress-score" id="dailyScoreDisplay">0 of 21 Completed</span>
               </div>
               <div class="progress-percentage-pill" id="dailyPercentPill">0%</div>
             </div>
@@ -169,57 +147,17 @@
             </div>
           </div>
 
-          <!-- Categorized Checklist Columns -->
-          <div class="daily-categories-grid">
-            
-            <!-- Column 1: Spiritual & Duas -->
-            <div class="checklist-column spiritual-card">
-              <div class="col-header">
-                <div class="col-title-group">
-                  <span class="category-icon">🕌</span>
-                  <h3 class="col-title">SPIRITUAL & PRAYERS</h3>
-                </div>
-                <span class="col-count" id="countSpiritual">0/9</span>
-              </div>
-              <div class="checklist-items" id="listSpiritual">
-                <!-- Injected via JS -->
-              </div>
+          <!-- Single Unified Checklist (No separate category columns) -->
+          <div class="daily-unified-card">
+            <div class="checklist-items" id="dailyItemsList">
+              <!-- All 21 items injected via JS in exact rearranged order -->
             </div>
-
-            <!-- Column 2: DSA & Study -->
-            <div class="checklist-column career-card">
-              <div class="col-header">
-                <div class="col-title-group">
-                  <span class="category-icon">💻</span>
-                  <h3 class="col-title">DSA & LEARNING</h3>
-                </div>
-                <span class="col-count" id="countCareer">0/4</span>
-              </div>
-              <div class="checklist-items" id="listCareer">
-                <!-- Injected via JS -->
-              </div>
-            </div>
-
-            <!-- Column 3: Health & Routine -->
-            <div class="checklist-column lifestyle-card">
-              <div class="col-header">
-                <div class="col-title-group">
-                  <span class="category-icon">🌿</span>
-                  <h3 class="col-title">HEALTH & WELLNESS</h3>
-                </div>
-                <span class="col-count" id="countLifestyle">0/7</span>
-              </div>
-              <div class="checklist-items" id="listLifestyle">
-                <!-- Injected via JS -->
-              </div>
-            </div>
-
           </div>
 
-          <!-- Daily Reflection / Basic Journal Prompt (from Habit list: write journal basic) -->
+          <!-- Daily Reflection / Basic Journal Prompt -->
           <div class="daily-journal-card">
             <div class="journal-card-header">
-              <span class="journal-title">✦ DAILY BASIC JOURNAL & INTENTION</span>
+              <span class="journal-title">DAILY BASIC JOURNAL & INTENTION</span>
               <span class="journal-status" id="journalSavedNotice">Auto-saved</span>
             </div>
             <textarea id="dailyJournalInput" class="journal-textarea" rows="3" placeholder="Write your thoughts, gratitude, or quick reflection for the day..."></textarea>
@@ -264,13 +202,13 @@
 
           <!-- Habit Streaks & Success Breakdown Table -->
           <div class="habits-breakdown-card">
-            <h3 class="breakdown-title">✦ ALL 20 HABITS PERFORMANCE BREAKDOWN</h3>
+            <h3 class="breakdown-title">HABITS PERFORMANCE BREAKDOWN</h3>
             <div class="table-responsive">
               <table class="stats-table">
                 <thead>
                   <tr>
+                    <th>#</th>
                     <th>Habit</th>
-                    <th>Category</th>
                     <th>Completed</th>
                     <th>Missed</th>
                     <th>Rate</th>
@@ -289,15 +227,11 @@
 
     </main>
 
-    <!-- Aesthetic Floating Footer -->
-    <footer class="app-footer">
-      <div class="footer-sparkle">✦ ✦ ✦</div>
-      <p>Aesthetic Bullet Journal Habit Tracker • Designed with discipline & care</p>
-    </footer>
+    <!-- Footer completely clean as requested -->
+    <footer class="app-footer"></footer>
 
   </div>
 
-  <!-- Audio element for soft aesthetic click (Web Audio API synthetic fallback) -->
   <script src="app.js"></script>
 </body>
 </html>

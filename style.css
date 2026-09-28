@@ -107,13 +107,6 @@ body {
   position: relative;
 }
 
-.brand-sparkle {
-  color: var(--color-gold);
-  font-size: 0.9rem;
-  letter-spacing: 0.4em;
-  margin-bottom: 0.25rem;
-}
-
 .brand-title {
   font-family: var(--font-display);
   font-size: 2.1rem;
@@ -122,16 +115,6 @@ body {
   color: var(--color-forest);
   text-transform: uppercase;
   margin-left: 0.32em; /* visual balance for wide tracking */
-}
-
-.brand-subtitle {
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  margin-top: 0.25rem;
 }
 
 /* Controls Bar */
@@ -668,24 +651,13 @@ body {
 /* Sheet Bottom Bar */
 .sheet-bottom-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
   margin-top: 1rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--color-border);
   font-size: 0.8rem;
   color: var(--color-text-muted);
-}
-
-.tip-star {
-  color: var(--color-gold);
-}
-
-.month-overall-stat strong {
-  color: var(--color-forest);
-  font-family: var(--font-display);
 }
 
 /* ==========================================================================
@@ -858,66 +830,29 @@ body {
   color: var(--color-forest);
 }
 
-/* Categorized Checklist Columns */
-.daily-categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.25rem;
-}
-
-.checklist-column {
+/* Unified Daily Checklist Card */
+.daily-unified-card {
   background: var(--bg-sheet);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 1.25rem;
+  padding: 1.5rem;
   box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
 }
 
-.col-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid var(--color-border);
-  padding-bottom: 0.65rem;
+.daily-unified-card .checklist-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0.75rem;
 }
 
-.col-title-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.category-icon {
-  font-size: 1.1rem;
-}
-
-.col-title {
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  color: var(--color-forest);
-  text-transform: uppercase;
-}
-
-.col-count {
+.habit-idx-badge {
   font-family: var(--font-display);
   font-size: 0.72rem;
-  font-weight: 700;
-  background: var(--bg-sheet-secondary);
-  color: var(--color-forest);
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-border);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  width: 1.5rem;
+  flex-shrink: 0;
 }
-
-/* Specific category tints */
-.spiritual-card .col-header { border-bottom-color: var(--color-forest); }
-.career-card .col-header { border-bottom-color: var(--color-gold); }
-.lifestyle-card .col-header { border-bottom-color: var(--color-rose); }
 
 /* Checklist Items */
 .checklist-items {
@@ -1219,19 +1154,7 @@ body {
    Footer
    ========================================================================== */
 .app-footer {
-  text-align: center;
-  padding: 1.5rem 0;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-family: var(--font-display);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
-.footer-sparkle {
-  color: var(--color-gold);
-  letter-spacing: 0.5em;
-  margin-bottom: 0.35rem;
+  display: none;
 }
 
 /* ==========================================================================
