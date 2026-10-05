@@ -30,57 +30,60 @@
       </div>
 
       <div class="controls-bar">
-        <!-- View Switcher -->
-        <div class="nav-tabs" role="tablist">
-          <button class="tab-btn active" id="tabGrid" data-view="grid">
-            <span class="tab-icon">▦</span>
-            <span>MONTHLY GRID</span>
-          </button>
-          <button class="tab-btn" id="tabDaily" data-view="daily">
-            <span class="tab-icon">✓</span>
-            <span>TODAY'S TO-DO</span>
-            <span class="badge-count" id="todayDoneBadge">0/21</span>
-          </button>
-          <button class="tab-btn" id="tabStats" data-view="stats">
-            <span class="tab-icon">📊</span>
-            <span>INSIGHTS</span>
-          </button>
+        <!-- Left Group: Nav Tabs on top, Action Buttons (bell, backup, restore, print) directly below -->
+        <div class="nav-and-actions-group">
+          <!-- View Switcher Tabs -->
+          <div class="nav-tabs" role="tablist">
+            <button class="tab-btn active" id="tabGrid" data-view="grid">
+              <span class="tab-icon">▦</span>
+              <span>MONTHLY GRID</span>
+            </button>
+            <button class="tab-btn" id="tabDaily" data-view="daily">
+              <span class="tab-icon">✓</span>
+              <span>TODAY'S TO-DO</span>
+              <span class="badge-count" id="todayDoneBadge">0/21</span>
+            </button>
+            <button class="tab-btn" id="tabStats" data-view="stats">
+              <span class="tab-icon">📊</span>
+              <span>INSIGHTS</span>
+            </button>
+          </div>
+
+          <!-- Actions placed below Today's To-Do / Tabs -->
+          <div class="header-actions">
+            <button class="action-btn" id="soundToggleBtn" title="Toggle Sound Feedback">
+              <span id="soundIcon">🔔</span>
+            </button>
+            <button class="action-btn" id="exportBtn" title="Export / Backup Data">
+              <span>💾 Backup</span>
+            </button>
+            <button class="action-btn" id="importBtn" title="Restore Data">
+              <span>📥 Restore</span>
+            </button>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;">
+            <button class="action-btn print-btn" id="printBtn" title="Print Tracker Sheet">
+              <span>🖨️ Print</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Month Navigation + Twilight Switch Directly Below It -->
+        <!-- Right/Center Group: Month Navigation (slightly bigger) + Day/Night Toggle Switch below it -->
         <div class="month-center-group">
           <div class="month-nav">
             <button class="nav-arrow-btn" id="prevMonthBtn" title="Previous Month" aria-label="Previous Month">❮</button>
-            <div class="current-month-display" id="currentMonthYear">SEPTEMBER 2026</div>
+            <div class="current-month-display" id="currentMonthYear">OCTOBER 2026</div>
             <button class="nav-arrow-btn" id="nextMonthBtn" title="Next Month" aria-label="Next Month">❯</button>
             <button class="today-shortcut-btn" id="jumpTodayBtn" title="Go to Current Day">Today</button>
           </div>
 
-          <!-- Twilight Mode Toggle Switch Below Month (Image 4 style) -->
+          <!-- Night / Day Mode Toggle with ☀️ / 🌙 Emoji (No text) -->
           <div class="theme-switch-wrap">
-            <span class="theme-switch-label">Twilight</span>
+            <span class="theme-emoji" id="themeEmoji" title="Click to toggle Day/Night Mode">☀️</span>
             <label class="switch-toggle" for="themeSwitch">
-              <input type="checkbox" id="themeSwitch" aria-label="Toggle Twilight Mode">
+              <input type="checkbox" id="themeSwitch" aria-label="Toggle Night Mode">
               <span class="switch-track"></span>
             </label>
           </div>
-        </div>
-
-        <!-- Actions & Tools (Twilight button removed from here) -->
-        <div class="header-actions">
-          <button class="action-btn" id="soundToggleBtn" title="Toggle Sound Feedback">
-            <span id="soundIcon">🔔</span>
-          </button>
-          <button class="action-btn" id="exportBtn" title="Export / Backup Data">
-            <span>💾 Backup</span>
-          </button>
-          <button class="action-btn" id="importBtn" title="Restore Data">
-            <span>📥 Restore</span>
-          </button>
-          <input type="file" id="importFileInput" accept=".json" style="display: none;">
-          <button class="action-btn print-btn" id="printBtn" title="Print Tracker Sheet">
-            <span>🖨️ Print</span>
-          </button>
         </div>
       </div>
     </header>
@@ -89,15 +92,14 @@
     <main class="main-content">
       
       <!-- ==================== VIEW 1: MONTHLY GRID ==================== -->
-      <!-- Removed outer extra frame layer to eliminate double backgrounds and save space -->
       <section id="viewGrid" class="view-panel active">
         <div class="sheet-paper">
           
-          <!-- Clean Sheet Header (This Week toggle removed) -->
+          <!-- Clean Sheet Header -->
           <div class="sheet-top-header">
             <div class="sheet-title-group">
               <span class="sheet-main-title" id="sheetMonthLabel">MONTHLY HABIT TRACKER</span>
-              <span class="sheet-sub-date" id="sheetDateSubtitle">SEPTEMBER 2026</span>
+              <span class="sheet-sub-date" id="sheetDateSubtitle">OCTOBER 2026</span>
             </div>
           </div>
 
@@ -105,22 +107,15 @@
           <div class="grid-table-container" id="gridTableContainer">
             <table class="habit-grid-table" id="habitGridTable">
               <thead id="gridThead">
-                <!-- Injected via JS: 1 Single unified header row -->
+                <!-- Injected via JS -->
               </thead>
               <tbody id="gridTbody">
-                <!-- Injected via JS: 21 Habit Rows -->
+                <!-- Injected via JS -->
               </tbody>
               <tfoot id="gridTfoot">
-                <!-- Injected via JS: Daily Completion Count & Percentage Row -->
+                <!-- Injected via JS -->
               </tfoot>
             </table>
-          </div>
-
-          <!-- Sheet Footer Guide -->
-          <div class="sheet-bottom-bar">
-            <div class="guide-tip">
-              Click box: <strong>Empty → ✓ Tick → ✕ Cross</strong> &bull; Right-click or hold box to add a <strong>Mini-Note 📝</strong>
-            </div>
           </div>
 
         </div>
@@ -135,7 +130,7 @@
             <div class="daily-date-picker-group">
               <div class="daily-heading-texts">
                 <h2 class="daily-heading" id="dailyViewDateTitle">TODAY'S CHECKLIST</h2>
-                <p class="daily-subtext" id="dailyViewDateSub">Monday, September 28, 2026</p>
+                <p class="daily-subtext" id="dailyViewDateSub">Monday, October 5, 2026</p>
               </div>
             </div>
             
@@ -250,26 +245,6 @@
     <footer class="app-footer"></footer>
 
   </div>
-
-  <!-- Note Popover / Dialog -->
-  <dialog id="noteDialog" class="aesthetic-dialog">
-    <div class="dialog-box">
-      <div class="dialog-header">
-        <div class="dialog-title-wrap">
-          <h3 class="dialog-title" id="noteDialogTitle">Add Habit Note</h3>
-          <span class="dialog-subdate" id="noteDialogDate">Date</span>
-        </div>
-        <button type="button" class="dialog-close-btn" id="closeNoteDialogBtn">✕</button>
-      </div>
-      <div class="dialog-body">
-        <input type="text" id="noteTextInput" class="dialog-text-input" placeholder="e.g. Solved 2 LeetCode Tree problems, Surah Al-Kahf..." maxlength="120">
-      </div>
-      <div class="dialog-footer">
-        <button type="button" class="btn-dialog-secondary" id="deleteNoteBtn">Clear Note</button>
-        <button type="button" class="btn-dialog-primary" id="saveNoteBtn">Save</button>
-      </div>
-    </div>
-  </dialog>
 
   <script src="app.js"></script>
 </body>

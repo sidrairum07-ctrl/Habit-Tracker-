@@ -1,6 +1,6 @@
 /**
  * Aesthetic Habit Tracker & Daily To-Do Planner
- * Clean, perfectly aligned, single-row table header, iOS-style toggle switch below month
+ * Clean, minimal, zero clutter, perfectly aligned table, iOS-style toggle switch below month
  */
 
 (function () {
@@ -46,26 +46,20 @@
   let currentTheme = 'linen'; // 'linen' or 'twilight'
   let soundEnabled = true;
 
-  // Active dialog context
-  let activeNoteContext = { dateKey: null, habitId: null };
-
   // Data storage
   let trackerData = {}; // { dateKey: { habitId: 1 | 2 } }
   let journalData = {}; // { dateKey: "text" }
-  let notesData = {};   // { dateKey: { habitId: "note text" } }
 
-  const STORAGE_KEY = 'bullet_tracker_data_v4';
-  const JOURNAL_KEY = 'bullet_journal_data_v4';
-  const NOTES_KEY = 'bullet_notes_data_v4';
-  const SOUND_KEY = 'bullet_tracker_sound_v4';
-  const THEME_KEY = 'bullet_theme_v4';
+  const STORAGE_KEY = 'bullet_tracker_data_v5';
+  const JOURNAL_KEY = 'bullet_journal_data_v5';
+  const SOUND_KEY = 'bullet_tracker_sound_v5';
+  const THEME_KEY = 'bullet_theme_v5';
 
   // --- 3. INIT ---
   function init() {
     loadFromLocalStorage();
     initTheme();
     setupEventListeners();
-    setupNoteDialog();
     updateMonthDisplay();
     renderMonthlyGrid();
     setupDailyView();
@@ -94,14 +88,11 @@
 
   function loadFromLocalStorage() {
     try {
-      const savedTracker = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('bullet_tracker_data_v3');
+      const savedTracker = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('bullet_tracker_data_v4');
       if (savedTracker) trackerData = JSON.parse(savedTracker);
 
-      const savedJournals = localStorage.getItem(JOURNAL_KEY) || localStorage.getItem('bullet_journal_data_v3');
+      const savedJournals = localStorage.getItem(JOURNAL_KEY) || localStorage.getItem('bullet_journal_data_v4');
       if (savedJournals) journalData = JSON.parse(savedJournals);
-
-      const savedNotes = localStorage.getItem(NOTES_KEY);
-      if (savedNotes) notesData = JSON.parse(savedNotes);
 
       const savedSound = localStorage.getItem(SOUND_KEY);
       if (savedSound !== null) soundEnabled = savedSound === 'true';
@@ -125,12 +116,6 @@
     } catch (e) {}
   }
 
-  function saveNotesToLocalStorage() {
-    try {
-      localStorage.setItem(NOTES_KEY, JSON.stringify(notesData));
-    } catch (e) {}
-  }
-
   // --- 4. THEME TOGGLE (iOS Slider Switch) ---
   function initTheme() {
     applyTheme(currentTheme);
@@ -139,12 +124,15 @@
   function applyTheme(theme) {
     currentTheme = theme;
     const switchEl = document.getElementById('themeSwitch');
+    const emojiEl = document.getElementById('themeEmoji');
     if (theme === 'twilight') {
       document.documentElement.setAttribute('data-theme', 'twilight');
       if (switchEl) switchEl.checked = true;
+      if (emojiEl) emojiEl.textContent = '🌙';
     } else {
       document.documentElement.removeAttribute('data-theme');
       if (switchEl) switchEl.checked = false;
+      if (emojiEl) emojiEl.textContent = '☀️';
     }
     localStorage.setItem(THEME_KEY, currentTheme);
   }
@@ -196,24 +184,6 @@
     onDataUpdated();
   }
 
-  function getCellNote(dateKey, habitId) {
-    if (!notesData[dateKey]) return '';
-    return notesData[dateKey][habitId] || '';
-  }
-
-  function setCellNote(dateKey, habitId, noteText) {
-    const trimmed = (noteText || '').trim();
-    if (!notesData[dateKey]) notesData[dateKey] = {};
-    if (!trimmed) {
-      delete notesData[dateKey][habitId];
-      if (Object.keys(notesData[dateKey]).length === 0) delete notesData[dateKey];
-    } else {
-      notesData[dateKey][habitId] = trimmed;
-    }
-    saveNotesToLocalStorage();
-    onDataUpdated();
-  }
-
   function onDataUpdated() {
     renderMonthlyGrid();
     renderDailyView();
@@ -238,7 +208,7 @@
     return new Date(year, month + 1, 0).getDate();
   }
 
-  // --- 5. MONTHLY GRID VIEW (Seamless 1-Row Table Header) ---
+  // --- 5. MONTHLY GRID VIEW (Laser-Straight Single Header Row) ---
   function updateMonthDisplay() {
     const label = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
     document.getElementById('currentMonthYear').textContent = label;
@@ -253,7 +223,7 @@
 
     const todayKey = formatDateKey(new Date());
 
-    // 1. THEAD: Exactly 1 single header row so borders are 100% laser-straight with zero misalignment!
+    // 1. THEAD: Exactly 1 single header row
     let theadRowHtml = `<th class="habit-col-name"><div class="habit-col-head-text">HABIT (${HABITS.length})</div></th>`;
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -285,7 +255,7 @@
     HABITS.forEach((habit, idx) => {
       let rowHtml = `<tr data-habit-id="${habit.id}">`;
 
-      // Sticky habit cell
+      // Sticky habit name cell
       rowHtml += `
         <td class="habit-name-cell">
           <div class="habit-title-wrap">
@@ -300,7 +270,6 @@
       for (let day = 1; day <= daysInMonth; day++) {
         const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const state = getCellState(dateKey, habit.id);
-        const note = getCellNote(dateKey, habit.id);
         const dayDate = new Date(currentYear, currentMonth, day);
         const isWeekend = dayDate.getDay() === 0 || dayDate.getDay() === 6;
         const isToday = dateKey === todayKey;
@@ -317,16 +286,14 @@
           iconContent = '✕';
         }
 
-        const noteClass = note ? 'has-note' : '';
         const cellColClass = `${isToday ? 'col-today' : ''} ${isWeekend ? 'col-weekend' : ''}`;
-        const tooltipNote = note ? `\n📝 Note: "${note}"` : '\n(Right-click to add note)';
 
         rowHtml += `
           <td class="${cellColClass}">
-            <div class="grid-box ${stateClass} ${noteClass}" 
+            <div class="grid-box ${stateClass}" 
                  data-date="${dateKey}" 
                  data-habit="${habit.id}" 
-                 title="${habit.name} (Day ${day}): ${state === 1 ? 'Done ✓' : state === 2 ? 'Missed ✕' : 'Unchecked'}${tooltipNote}">
+                 title="${habit.name} (Day ${day}): ${state === 1 ? 'Done ✓' : state === 2 ? 'Missed ✕' : 'Click to mark'}">
               ${iconContent}
             </div>
           </td>
@@ -346,7 +313,7 @@
 
     gridTbody.innerHTML = tbodyHtml;
 
-    // 3. TFOOT: Daily Column Summaries
+    // 3. TFOOT: Daily Totals
     let tfootHtml = `<tr><td class="habit-name-cell"><strong>DAILY TOTAL</strong></td>`;
     for (let day = 1; day <= daysInMonth; day++) {
       const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -369,83 +336,15 @@
     tfootHtml += `<td class="habit-row-total">-</td></tr>`;
     gridTfoot.innerHTML = tfootHtml;
 
-    // Click & Right-click Handlers
+    // Click handler on boxes
     gridTbody.querySelectorAll('.grid-box').forEach(box => {
       box.addEventListener('click', function () {
         cycleHabitState(this.dataset.date, this.dataset.habit);
       });
-
-      box.addEventListener('contextmenu', function (e) {
-        e.preventDefault();
-        openNoteDialog(this.dataset.date, this.dataset.habit);
-      });
-
-      let pressTimer;
-      box.addEventListener('touchstart', function () {
-        pressTimer = setTimeout(() => {
-          openNoteDialog(box.dataset.date, box.dataset.habit);
-        }, 600);
-      }, { passive: true });
-      box.addEventListener('touchend', function () {
-        clearTimeout(pressTimer);
-      });
     });
   }
 
-  // --- 6. MINI-NOTES DIALOG ---
-  function setupNoteDialog() {
-    const dialog = document.getElementById('noteDialog');
-    const closeBtn = document.getElementById('closeNoteDialogBtn');
-    const saveBtn = document.getElementById('saveNoteBtn');
-    const deleteBtn = document.getElementById('deleteNoteBtn');
-    const input = document.getElementById('noteTextInput');
-
-    closeBtn.addEventListener('click', () => dialog.close());
-
-    saveBtn.addEventListener('click', () => {
-      if (activeNoteContext.dateKey && activeNoteContext.habitId) {
-        setCellNote(activeNoteContext.dateKey, activeNoteContext.habitId, input.value);
-      }
-      dialog.close();
-    });
-
-    deleteBtn.addEventListener('click', () => {
-      if (activeNoteContext.dateKey && activeNoteContext.habitId) {
-        setCellNote(activeNoteContext.dateKey, activeNoteContext.habitId, '');
-      }
-      dialog.close();
-    });
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        saveBtn.click();
-      }
-    });
-  }
-
-  function openNoteDialog(dateKey, habitId) {
-    const habit = HABITS.find(h => h.id === habitId);
-    if (!habit) return;
-
-    activeNoteContext = { dateKey, habitId };
-
-    const dialog = document.getElementById('noteDialog');
-    const titleEl = document.getElementById('noteDialogTitle');
-    const dateEl = document.getElementById('noteDialogDate');
-    const input = document.getElementById('noteTextInput');
-
-    const d = parseDateKey(dateKey);
-    titleEl.textContent = `${habit.name} Note`;
-    dateEl.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-
-    input.value = getCellNote(dateKey, habitId);
-
-    dialog.showModal();
-    input.focus();
-  }
-
-  // --- 7. TODAY'S DAILY CHECKLIST VIEW ---
+  // --- 6. TODAY'S DAILY CHECKLIST VIEW ---
   function setupDailyView() {
     const picker = document.getElementById('dailyDatePicker');
     picker.value = selectedDailyDate;
@@ -524,7 +423,6 @@
 
     HABITS.forEach((habit, idx) => {
       const state = getCellState(selectedDailyDate, habit.id);
-      const note = getCellNote(selectedDailyDate, habit.id);
       const streak = calculateHabitStreak(habit.id, selectedDailyDate);
 
       if (state === 1) totalDone++;
@@ -534,21 +432,18 @@
       if (state === 2) rowStateClass = 'state-missed';
 
       const streakBadge = streak > 0 ? `<span class="item-streak-chip">🔥 ${streak}d</span>` : '';
-      const noteClass = note ? 'has-note' : '';
-      const noteTitle = note ? `Note: "${note}"` : 'Add note';
 
       const itemEl = document.createElement('div');
       itemEl.className = `daily-item-row ${rowStateClass}`;
       itemEl.innerHTML = `
         <div class="item-left">
           <span class="habit-idx-badge">${String(idx + 1).padStart(2, '0')}.</span>
-          <span class="item-text" title="${habit.name}${note ? ' — ' + note : ''}">${habit.name}</span>
+          <span class="item-text" title="${habit.name}">${habit.name}</span>
           ${streakBadge}
         </div>
         <div class="item-actions">
           <button class="check-btn btn-tick" title="Mark Done (Tick)">✓</button>
           <button class="check-btn btn-cross" title="Mark Missed (Cross)">✕</button>
-          <button class="check-btn btn-note ${noteClass}" title="${noteTitle}">✎</button>
           <button class="check-btn btn-reset" title="Reset">↺</button>
         </div>
       `;
@@ -563,10 +458,6 @@
         const nextState = state === 2 ? 0 : 2;
         setCellState(selectedDailyDate, habit.id, nextState);
         if (nextState === 2) playTickSound(false);
-      });
-
-      itemEl.querySelector('.btn-note').addEventListener('click', () => {
-        openNoteDialog(selectedDailyDate, habit.id);
       });
 
       itemEl.querySelector('.btn-reset').addEventListener('click', () => {
@@ -584,7 +475,7 @@
     document.getElementById('dailyProgressBar').style.width = `${pct}%`;
   }
 
-  // --- 8. STREAKS & INSIGHTS ---
+  // --- 7. STREAKS & INSIGHTS ---
   function calculateHabitStreak(habitId, untilDateKey) {
     let streak = 0;
     let checkDate = parseDateKey(untilDateKey);
@@ -680,7 +571,7 @@
     document.getElementById('todayDoneBadge').textContent = `${done}/${HABITS.length}`;
   }
 
-  // --- 9. EVENT LISTENERS ---
+  // --- 8. EVENT LISTENERS ---
   function setupEventListeners() {
     // Navigation Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -739,9 +630,16 @@
 
     // Theme Switch (iOS Toggle below Month)
     const themeSwitch = document.getElementById('themeSwitch');
+    const themeEmoji = document.getElementById('themeEmoji');
     if (themeSwitch) {
       themeSwitch.addEventListener('change', function () {
         applyTheme(this.checked ? 'twilight' : 'linen');
+      });
+    }
+    if (themeEmoji) {
+      themeEmoji.addEventListener('click', function () {
+        const next = currentTheme === 'twilight' ? 'linen' : 'twilight';
+        applyTheme(next);
       });
     }
 
@@ -763,8 +661,7 @@
         version: 5,
         exportDate: new Date().toISOString(),
         trackerData,
-        journalData,
-        notesData
+        journalData
       };
       const jsonStr = JSON.stringify(exportObject, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -795,10 +692,8 @@
           if (imported.trackerData) {
             trackerData = { ...trackerData, ...imported.trackerData };
             if (imported.journalData) journalData = { ...journalData, ...imported.journalData };
-            if (imported.notesData) notesData = { ...notesData, ...imported.notesData };
             saveToLocalStorage();
             saveJournalToLocalStorage();
-            saveNotesToLocalStorage();
             onDataUpdated();
             alert('Backup restored successfully!');
           } else {
