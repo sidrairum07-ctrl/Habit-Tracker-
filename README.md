@@ -1,11 +1,23 @@
-# Aesthetic Bullet Journal Habit Tracker & Daily To-Do Website
+# 🌿 Aesthetic Bullet Journal Habit Tracker & Daily Routine
+
+<div align="center">
+
+### 👉 **[✨ CLICK HERE TO OPEN LIVE WEBSITE ✨](https://sidrairum07-ctrl.github.io/Habit-Tracker-/)** 👈
+
+[![Open Live Habit Tracker](https://img.shields.io/badge/🌿_Live_App-Open_Habit_Tracker-526E48?style=for-the-badge&logoColor=white)](https://sidrairum07-ctrl.github.io/Habit-Tracker-/)
+
+</div>
+
+---
 
 A minimalist, clean habit tracker website designed with bullet-journal aesthetics, inspired directly by your reference pictures:
 
-- **Look & Grid Layout**: Styled like the yellow/cream grid tracker sheet (Image 2) with an inner off-white paper canvas, month headers, and sticky habit names.
-- **Typography**: Clean, widely-spaced modern uppercase lettering (`Montserrat` display tracking) inspired by the Weekly Planner (Image 1).
-- **Color Palette**: Muted earthy sage green (`#8A9A86`), deep forest slate (`#364837`), dusty rose (`#C69C94`), and warm linen/sand tones inspired by Image 3.
-- **Interactive Ticks & Wrongs**: Full support for checking off habits (✓ Tick) or marking them missed (✕ Cross) every day with smooth tactile micro-animations and optional soft audio feedback.
+- **Look & Grid Layout**: Styled like the yellow/cream grid tracker sheet with an inner off-white paper canvas, clean month headers, and sticky habit names.
+- **Compact View**: Sized perfectly so all 30 or 31 days fit comfortably on screen without excessive horizontal scrolling.
+- **Typography**: Clean, widely-spaced modern uppercase lettering (`Montserrat` display tracking) inspired by aesthetic planner layouts.
+- **Color Palette**: Muted earthy sage green (`#8A9A86`), deep forest slate (`#364837`), dusty rose (`#C69C94`), and warm linen/sand tones.
+- **Interactive Ticks & Wrongs**: Full support for checking off habits (✓ Tick) or marking them missed (✕ Cross) every day with tactile micro-animations and optional soft audio feedback.
+- **Day & Night Mode**: Minimalist slider with `☀️` (day) and `🌙` (night) modes for comfortable late-night tracking.
 
 ---
 
@@ -37,10 +49,10 @@ A minimalist, clean habit tracker website designed with bullet-journal aesthetic
 
 ## 🌟 Key Features
 
-1. **Monthly Grid View (Image 2 Style)**:
+1. **Monthly Grid View**:
    - Full 1 to 31 horizontal calendar sheet.
    - Click any box to toggle: **Empty → ✓ Tick (Sage Green) → ✕ Cross (Dusty Rose) → Empty**.
-   - Sticky habit column so names remain visible as you scroll horizontally.
+   - Sticky habit column so names remain visible as you scroll.
    - Real-time daily progress score and mini progress bar at the bottom.
 
 2. **Today's To-Do Checklist View**:
@@ -63,6 +75,6 @@ A minimalist, clean habit tracker website designed with bullet-journal aesthetic
 
 ---
 
-## 🚀 How to Open and Run
+## 🚀 How to Run Locally
 
 Open `index.html` with Google Chrome, Microsoft Edge, Brave, or any modern web browser!
